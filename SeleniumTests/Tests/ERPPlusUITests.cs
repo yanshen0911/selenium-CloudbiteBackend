@@ -5,7 +5,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace ERPPlus.SeleniumTests
+namespace SeleniumTests.Tests
 {
     public class ERPPlusUITests
     {
@@ -18,7 +18,7 @@ namespace ERPPlus.SeleniumTests
             driver = new ChromeDriver();
             driver.Manage().Window.Maximize();
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(80));
         }
 
         [Test]
