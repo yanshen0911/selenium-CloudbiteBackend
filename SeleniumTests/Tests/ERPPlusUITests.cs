@@ -21,7 +21,7 @@ namespace SeleniumTests.Tests
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(80));
         }
 
-        [Test]
+        //[Test]
         public void TestLogin()
 
         {

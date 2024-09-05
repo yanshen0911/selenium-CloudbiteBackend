@@ -1,6 +1,5 @@
 ﻿using OpenQA.Selenium;
 using SeleniumExtras.PageObjects;
-using ERPPlus.SeleniumTests;
 
 namespace ERPPlus.SeleniumTests.Pages
 {
