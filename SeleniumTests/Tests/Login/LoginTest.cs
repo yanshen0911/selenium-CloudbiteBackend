@@ -27,7 +27,7 @@ namespace SeleniumTests.Tests.Login
             driver.Manage().Window.Maximize();
 
             // Initialize WebDriverWait with a timeout of 30 seconds
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
         }
 
         // Data-driven test using NUnit TestCase attribute
