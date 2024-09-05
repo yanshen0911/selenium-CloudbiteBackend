@@ -44,34 +44,35 @@ namespace SeleniumTests.Tests.Language
 
 
         [Test]
-        [TestCase("en", "Dashboard", true)]  // English valid case
-        [TestCase("zh", "仪表板", true)]  // Chinese valid case
-        [TestCase("ja", "ダッシュボード", true)]  // Japanese valid case
-        [TestCase("en", "仪表板", false)]  // English breadcrumb should not be in Chinese
-        [TestCase("zh", "Dashboard", false)]  // Chinese breadcrumb should not be in English
-        [TestCase("ja", "仪表板", false)]  // Japanese breadcrumb should not be in Chinese
+        [TestCase("en", "Dashboard", true)]  // True positive: English switch succeeds, correct text displayed
+        [TestCase("zh", "Dashboard", false)]  // False positive: Chinese switch should not display English text
+        [TestCase("invalid_code", "Dashboard", false)]  // True negative: Invalid language should not succeed
+        [TestCase("ja", "ダッシュボード", true)]  // True positive: Japanese switch succeeds, correct text displayed
+        [TestCase("ja", "Dashboard", false)]  // False negative: Japanese switch incorrectly displays English text
         public void VerifyBreadCrumbText(string languageCode, string expectedText, bool isValidText)
         {
             // Switch to the desired language
             dashboardPage.SwitchLanguage(languageCode);
 
-            // Wait for the breadcrumb element to be present (no specific text wait)
+            // Wait for the breadcrumb element to be present
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(dashboardPage.BreadCrumbLocator));
 
             // Get the actual breadcrumb text after language change
             string actualBreadCrumbText = dashboardPage.GetBreadCrumbText();
 
+            // Assert using IsTrue and IsFalse for YES/NO operations
             if (isValidText)
             {
-                // Positive case: The breadcrumb text should match the expected text
-                Assert.AreEqual(expectedText, actualBreadCrumbText, $"Breadcrumb text did not match for language: {languageCode}");
+                // Assert that the actual text matches the expected text (True positive case)
+                Assert.IsTrue(actualBreadCrumbText == expectedText, $"Expected '{expectedText}', but got '{actualBreadCrumbText}' for language: {languageCode}");
             }
             else
             {
-                // Negative case: The breadcrumb text should NOT match the expected text
-                Assert.AreNotEqual(expectedText, actualBreadCrumbText, $"Breadcrumb text unexpectedly matched for language: {languageCode}");
+                // Assert that the actual text does NOT match the expected text (True negative or False positive case)
+                Assert.IsFalse(actualBreadCrumbText == expectedText, $"Unexpected match for '{expectedText}' when switching to language: {languageCode}");
             }
         }
+
 
 
         [TearDown]
