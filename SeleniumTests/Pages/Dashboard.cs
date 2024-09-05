@@ -13,10 +13,14 @@ namespace SeleniumTests.Pages
             this.driver = driver;
             PageFactory.InitElements(driver, this);
         }
+        // Define the locator as a By object instead of just IWebElement
+        public By BreadCrumbLocator => 
+            By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[1]/div/div");
 
         // Update the locator for the BreadCrumb to a more specific XPath
-        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[1]/div/div")]
-        private IWebElement BreadCrumb;
+        [FindsBy(How = How.XPath, 
+            Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[1]/div/div")]
+        public IWebElement BreadCrumb;
 
         // Locator for the welcome message div using XPath to target the h2 element with specific text
         [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[2]/div/div/h2")]
@@ -28,6 +32,10 @@ namespace SeleniumTests.Pages
 
         [FindsBy(How = How.XPath, Using = "//*[@id=\"mat-menu-panel-0\"]/div/button/span/div")]
         private IWebElement LogOutButton;
+
+
+        [FindsBy(How = How.Id, Using = "selLanguage")]
+        private IWebElement LanguageDropDown;
 
         // Method to get BreadCrumb text
         public string GetBreadCrumbText()
@@ -44,9 +52,6 @@ namespace SeleniumTests.Pages
         // Method to perform logout
         public void Logout()
         {
-            //UserProfileDropDown.Click(); // Open user profile dropdown
-            //LogOutButton.Click(); // Click the logout button
-
 
             UserProfileDropDown.Click(); // Open user profile dropdown
 
@@ -56,6 +61,25 @@ namespace SeleniumTests.Pages
 
             LogOutButton.Click(); // Click the logout button
 
+        }
+
+        // Method to switch the language based on the language code
+        public void SwitchLanguage(string languageCode)
+        {
+
+            UserProfileDropDown.Click(); // Open user profile dropdown
+
+            // Wait until the dropdown is visible and clickable
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(LanguageDropDown));
+
+            // Create a SelectElement to interact with the dropdown
+            LanguageDropDown.Click();
+            SelectElement selectLanguage = new SelectElement(LanguageDropDown);
+            LanguageDropDown.Click();
+
+            selectLanguage.SelectByValue(languageCode); 
+        
         }
     }
 }

@@ -62,7 +62,9 @@ namespace SeleniumTests.Tests.Login
 
                 // Validate the welcome message on the dashboard
                 string welcomeMessage = dashboardPage.GetWelcomeMessageText();
+                string BreadCrumbText = dashboardPage.GetBreadCrumbText();
                 Assert.AreEqual("Welcome back to ERP+", welcomeMessage, "The welcome message did not match the expected value.");
+                Assert.AreEqual("Dashboard", BreadCrumbText, "The welcome message did not match the expected value.");
             }
             else
             {
