@@ -17,5 +17,17 @@ namespace ERPPlus.IntegrationTests.Data.TestData
             yield return new object[] { "wrongUser", "password" };
             yield return new object[] { "admin", "wrongPassword" };
         }
+
+        public static IEnumerable<object[]> LoginTestCases()
+        {
+            yield return new object[] { "admin", "password", 200 };  // True Positive: valid credentials
+            yield return new object[] { "wrongUser", "wrongPassword", 401 };  // True Negative: invalid credentials
+            yield return new object[] { "wrongUser", "wrongPassword", 200 };  // False Positive: invalid login returning success
+            yield return new object[] { "admin", "password", 401 };  // False Negative: valid login failing
+
+            yield return new object[] { "", "", 200 };  // NULL return success
+            yield return new object[] { "admin", "", 200 };  // NULL return success
+            yield return new object[] { "", "password", 200 };  // NULL return success
+        }
     }
 }

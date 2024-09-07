@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using RestSharp;
 using ERPPlus.IntegrationTests.Config;
-using ERPPlus.IntegrationTests.Data.Requests;
+using ERPPlus.IntegrationTests.Data.Request;
 
 namespace ERPPlus.IntegrationTests.Tests.API
 {

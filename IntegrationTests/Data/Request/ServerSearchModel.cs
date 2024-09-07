@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Data.Requests
+﻿namespace ERPPlus.IntegrationTests.Data.Request
 {
     public class ServerSearchModel
     {

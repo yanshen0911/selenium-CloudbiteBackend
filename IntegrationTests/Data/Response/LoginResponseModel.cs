@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Data.Responses
+﻿namespace ERPPlus.IntegrationTests.Data.Response
 {
     public class LoginResponseModel
     {
