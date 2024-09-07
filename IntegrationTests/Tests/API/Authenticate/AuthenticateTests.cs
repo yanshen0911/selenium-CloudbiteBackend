@@ -5,7 +5,7 @@ using ERPPlus.IntegrationTests.Data.TestData;
 using ERPPlus.IntegrationTests.Data.Request;
 using ERPPlus.IntegrationTests.Data.Response;
 
-namespace IntegrationTests.Tests.API.NewFolder
+namespace IntegrationTests.Tests.API.Authenticate
 {
     [TestFixture]
     public class AuthenticateTests
@@ -49,7 +49,7 @@ namespace IntegrationTests.Tests.API.NewFolder
             var response = client.Execute<LoginResponseModel>(request);
 
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
-            Assert.IsTrue(response.Data.IsAuthenticated, "Login should be successful.");
+            Assert.IsTrue(response.Data.Success, "Login should be successful.");
         }
 
         [Test, TestCaseSource(typeof(LoginData), nameof(LoginData.InvalidLoginData))]

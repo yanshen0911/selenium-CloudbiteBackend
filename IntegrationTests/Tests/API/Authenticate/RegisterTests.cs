@@ -1,7 +1,5 @@
-﻿using NUnit.Framework;
-using RestSharp;
+﻿using RestSharp;
 using ERPPlus.IntegrationTests.Config;
-using ERPPlus.IntegrationTests.Data.Request;
 using ERPPlus.IntegrationTests.Data.Request;
 
 namespace ERPPlus.IntegrationTests.Tests.API.Authenticate

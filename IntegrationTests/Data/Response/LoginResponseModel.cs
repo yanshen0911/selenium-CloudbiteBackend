@@ -2,9 +2,9 @@
 {
     public class LoginResponseModel
     {
-        public string Token { get; set; }    // Example: Authentication token after login
-        public string Username { get; set; }
-        public string Message { get; set; }  // e.g., "Login successful" or error message
-        public bool IsAuthenticated { get; set; }  // Boolean flag for success/failure
+        public string Token { get; set; }  // Token returned upon successful login
+        public string Username { get; set; }  // The logged-in username
+        public string Role { get; set; }  // Role or access level
+        public bool Success { get; set; }  // Whether the login was successful or not
     }
 }
