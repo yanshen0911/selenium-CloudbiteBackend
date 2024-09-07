@@ -25,11 +25,13 @@ namespace ERPPlus.SeleniumTests.Pages
 
         public void EnterUsername(string username)
         {
+            UsernameField.Clear();
             UsernameField.SendKeys(username);
         }
 
         public void EnterPassword(string password)
         {
+            PasswordField.Clear();
             PasswordField.SendKeys(password);
         }
 

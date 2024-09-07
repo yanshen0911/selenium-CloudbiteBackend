@@ -63,23 +63,43 @@ namespace SeleniumTests.Pages
 
         }
 
+        //// Method to switch the language based on the language code
+        //public void SwitchLanguage(string languageCode)
+        //{
+
+        //    UserProfileDropDown.Click(); // Open user profile dropdown
+
+        //    // Wait until the dropdown is visible and clickable
+        //    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        //    wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(LanguageDropDown));
+
+        //    // Create a SelectElement to interact with the dropdown
+        //    LanguageDropDown.Click();
+        //    SelectElement selectLanguage = new SelectElement(LanguageDropDown);
+        //    LanguageDropDown.Click();
+
+        //    selectLanguage.SelectByValue(languageCode); 
+        
+        //}
+
         // Method to switch the language based on the language code
         public void SwitchLanguage(string languageCode)
         {
+            // Open the language dropdown
+            LanguageDropDown.Click();
 
-            UserProfileDropDown.Click(); // Open user profile dropdown
-
-            // Wait until the dropdown is visible and clickable
+            // Wait for the dropdown to be visible and clickable
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(LanguageDropDown));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.Id("selLanguage")));
 
-            // Create a SelectElement to interact with the dropdown
-            LanguageDropDown.Click();
-            SelectElement selectLanguage = new SelectElement(LanguageDropDown);
-            LanguageDropDown.Click();
+            // Open the dropdown for languages
+            SelectElement languageSelect = new SelectElement(LanguageDropDown);
 
-            selectLanguage.SelectByValue(languageCode); 
-        
+            // Select the appropriate language by value (language code)
+            languageSelect.SelectByValue(languageCode);
+
+            // Ensure the page updates by waiting for the language switch to take effect
+            wait.Until(d => d.FindElement(BreadCrumbLocator).Text != string.Empty); // Ensure breadcrumb changes after language switch
         }
     }
 }

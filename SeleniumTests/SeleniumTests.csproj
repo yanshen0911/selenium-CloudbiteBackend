@@ -7,6 +7,10 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+	
+	<IsPackable>false</IsPackable>
+    <TestLogger>console;verbosity=normal</TestLogger>
+    <TestResultsDirectory>$(OutputPath)\TestResults</TestResultsDirectory>
   </PropertyGroup>
 
   <ItemGroup>

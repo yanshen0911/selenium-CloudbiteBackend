@@ -7,7 +7,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumTests.Pages;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace SeleniumTests.Tests.Login
+namespace SeleniumTests.Tests.Functional.Login
 {
     [TestFixture]
     public class LogoutTest

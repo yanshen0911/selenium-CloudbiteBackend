@@ -5,12 +5,14 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumTests.Data;
+using SeleniumTests.Helpers;
 using SeleniumTests.Pages;
 using System;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using TestContext = NUnit.Framework.TestContext;
 
-namespace SeleniumTests.Tests.Language
+namespace SeleniumTests.Tests.Functional.Language
 {
     [TestFixture]
     public class SwitchLanguageTest
@@ -20,6 +22,7 @@ namespace SeleniumTests.Tests.Language
         private Dashboard dashboardPage;
         private WebDriverWait wait;
         private TestHelper testHelper;
+        private LanguageHelper languageHelper;
 
         [SetUp]
         public void SetUp()
@@ -79,6 +82,31 @@ namespace SeleniumTests.Tests.Language
             }
 
             testHelper.LogTestResult($"Finished test for language: {languageCode}");
+        }
+
+        // Use test case data from LanguageData.cs
+        [Test, TestCaseSource(typeof(LanguageData), nameof(LanguageData.MixedLanguageData))]
+        public void TestSwitchLanguage_WithData(string languageCode, string expectedBreadCrumb, bool isValid)
+        {
+            // Switch language using the helper
+            languageHelper.SwitchLanguage(languageCode);
+
+            // Wait for the page to update
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.TextToBePresentInElement(dashboardPage.BreadCrumb, expectedBreadCrumb));
+
+            // Get the actual breadcrumb text
+            string actualBreadCrumbText = dashboardPage.GetBreadCrumbText();
+
+            if (isValid)
+            {
+                // Assert the breadcrumb text matches the expected text
+                Assert.AreEqual(expectedBreadCrumb, actualBreadCrumbText, $"Breadcrumb text did not match for language: {languageCode}");
+            }
+            else
+            {
+                // Assert the breadcrumb text should NOT match the expected text
+                Assert.AreNotEqual(expectedBreadCrumb, actualBreadCrumbText, $"Breadcrumb text unexpectedly matched for language: {languageCode}");
+            }
         }
 
         [TearDown]
