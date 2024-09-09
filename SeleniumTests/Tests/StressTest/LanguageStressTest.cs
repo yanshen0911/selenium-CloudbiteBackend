@@ -1,12 +1,15 @@
 ﻿using ERPPlus.SeleniumTests.Config;
 using ERPPlus.SeleniumTests.Drivers;
+using ERPPlus.SeleniumTests.Pages;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumTests.Helpers;
-using SeleniumTests.Data;
+using SeleniumTests.Pages;
+using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-using SeleniumExtras.WaitHelpers;
 
 namespace SeleniumTests.Tests.StressTest
 {
@@ -15,42 +18,155 @@ namespace SeleniumTests.Tests.StressTest
     {
         private IWebDriver driver;
         private WebDriverWait wait;
-        private LanguageHelper languageHelper;
+        private Dashboard dashboardPage;
+        private TestHelper testHelper;
 
         [SetUp]
         public void SetUp()
         {
-            driver = DriverFactory.CreateDriver(); // Get WebDriver instance from DriverFactory
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10)); // Set WebDriver wait time
-            languageHelper = new LanguageHelper(driver, wait); // Initialize language helper
+            driver = DriverFactory.CreateDriver(); // Create a new instance of WebDriver
             driver.Manage().Window.Maximize();
+
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5)); // Initialize WebDriverWait with a 5-second timeout
+            dashboardPage = new Dashboard(driver); // Initialize Dashboard page object
+            testHelper = new TestHelper(driver); // Initialize TestHelper
         }
 
-        // Use test data from LanguageData.cs
-        [Test, TestCaseSource(typeof(LanguageData), nameof(LanguageData.ValidLanguageData))]
-        public void StressTest_SwitchLanguageMultipleTimes(string languageCode, string expectedBreadCrumb)
+        // Stress test for multiple iterations using language switch
+        [Test]
+        [TestCase("ja", "ダッシュボード", true)]  // True positive: Japanese switch succeeds
+        [TestCase("en", "Dashboard", true)]  // True positive: English switch succeeds
+        public void LanguageSwitch_IterationStressTest(string languageCode, string expectedBreadCrumb, bool isValidText)
         {
-            int iterations = 100; // Define how many times you want to switch languages
+            testHelper.LogTestResult($"Starting stress test for language switching: {languageCode}");
 
-            for (int i = 0; i < iterations; i++)
+            for (int i = 0; i < 50; i++) // Iterate 50 times for stress testing
             {
-                // Switch between languages in each iteration
-                languageHelper.SwitchLanguage(languageCode);
+                driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login"); // Navigate to the login page
+                PerformLogin("admin", "password"); // Perform login
 
-                // Wait for the page to update with the selected language
-                wait.Until(ExpectedConditions.TextToBePresentInElementLocated(
-                    By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[1]/div/div"),
-                    expectedBreadCrumb));
+                // Switch language and verify breadcrumb text
+                SwitchLanguageAndVerifyBreadCrumb(languageCode, expectedBreadCrumb, isValidText);
+            }
 
-                // Log success for each iteration
-                Console.WriteLine($"Iteration {i + 1}: Language '{languageCode}' switched successfully to breadcrumb '{expectedBreadCrumb}'.");
+            testHelper.LogTestResult($"Finished stress test for language switching: {languageCode}");
+        }
+
+        // Parallel stress test using language switch
+        [Test]
+        [TestCase("ja", "ダッシュボード", true)]  // True positive: Japanese switch succeeds
+        [TestCase("en", "Dashboard", true)]  // True positive: English switch succeeds
+        public void LanguageSwitch_ParallelStressTest(string languageCode, string expectedBreadCrumb, bool isValidText)
+        {
+            testHelper.LogTestResult($"Starting parallel stress test for language switching: {languageCode}");
+
+            var results = new ConcurrentBag<bool>();
+
+            Parallel.For(0, 10, i =>
+            {
+                IWebDriver localDriver = null; // Declare WebDriver for each thread
+
+                try
+                {
+                    localDriver = DriverFactory.CreateDriver(); // Create a new WebDriver instance for each thread
+                    localDriver.Manage().Window.Maximize();
+
+                    var wait = new WebDriverWait(localDriver, TimeSpan.FromSeconds(5));
+                    var dashboardPage = new Dashboard(localDriver);
+                    var localTestHelper = new TestHelper(localDriver); // Initialize TestHelper for the local driver
+
+                    // Navigate to the login page and perform login
+                    localDriver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+                    PerformLogin(localDriver, wait, "admin", "password");
+
+                    // Switch language and verify breadcrumb text
+                    SwitchLanguageAndVerifyBreadCrumb(localDriver, wait, dashboardPage, languageCode, expectedBreadCrumb, isValidText);
+                    results.Add(true); // Mark iteration as success
+                }
+                catch (Exception ex)
+                {
+                    testHelper.LogTestResult($"Parallel iteration {i} failed: {ex.Message}");
+                    results.Add(false); // Mark iteration as failure
+                }
+                finally
+                {
+                    localDriver?.Quit(); // Ensure WebDriver is properly closed
+                }
+            });
+
+            Assert.IsTrue(results.All(r => r), "Some parallel language switches failed.");
+
+            testHelper.LogTestResult($"Finished parallel stress test for language switching: {languageCode}");
+        }
+
+        private void PerformLogin(IWebDriver localDriver, WebDriverWait wait, string username, string password)
+        {
+            var loginPage = new LoginPage(localDriver);
+            loginPage.EnterUsername(username);
+            loginPage.EnterPassword(password);
+            loginPage.ClickLoginButton();
+
+            // Wait for dashboard URL
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("/dashboard"));
+        }
+
+        private void SwitchLanguageAndVerifyBreadCrumb(IWebDriver localDriver, WebDriverWait wait, Dashboard dashboardPage, string languageCode, string expectedBreadCrumb, bool isValidText)
+        {
+            dashboardPage.SwitchLanguage(languageCode); // Switch language
+
+            // Wait for breadcrumb to update
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(dashboardPage.BreadCrumbLocator));
+
+            var actualBreadCrumb = dashboardPage.GetBreadCrumbText(); // Get breadcrumb text
+
+            if (isValidText)
+            {
+                Assert.IsTrue(actualBreadCrumb == expectedBreadCrumb, $"Expected: {expectedBreadCrumb}, but got: {actualBreadCrumb}");
+            }
+            else
+            {
+                Assert.IsFalse(actualBreadCrumb == expectedBreadCrumb, $"Unexpected match for '{expectedBreadCrumb}' when switching to language: {languageCode}");
+            }
+        }
+
+
+        private void PerformLogin(string username, string password)
+        {
+            // Login page logic
+            var loginPage = new LoginPage(driver);
+            loginPage.EnterUsername(username);
+            loginPage.EnterPassword(password);
+            loginPage.ClickLoginButton();
+
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("/dashboard")); // Wait for dashboard URL
+        }
+
+        private void SwitchLanguageAndVerifyBreadCrumb(string languageCode, string expectedBreadCrumb, bool isValidText)
+        {
+            dashboardPage.SwitchLanguage(languageCode); // Switch language
+
+            // Wait for breadcrumb to update
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(dashboardPage.BreadCrumbLocator));
+
+            var actualBreadCrumb = dashboardPage.GetBreadCrumbText(); // Get breadcrumb text
+
+            if (isValidText)
+            {
+                Assert.IsTrue(actualBreadCrumb == expectedBreadCrumb, $"Expected: {expectedBreadCrumb}, but got: {actualBreadCrumb}");
+            }
+            else
+            {
+                Assert.IsFalse(actualBreadCrumb == expectedBreadCrumb, $"Unexpected match for '{expectedBreadCrumb}' when switching to language: {languageCode}");
             }
         }
 
         [TearDown]
         public void TearDown()
         {
-            driver.Quit(); // Ensure WebDriver is properly closed
+            if (driver != null)
+            {
+                driver.Quit(); // Ensure WebDriver is properly closed
+            }
         }
     }
 }

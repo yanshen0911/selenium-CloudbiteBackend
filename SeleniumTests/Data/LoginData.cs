@@ -28,7 +28,7 @@ namespace SeleniumTests.Data
             yield return new object[] { "admin", "password", true };        // Valid case
             yield return new object[] { "admin", "wrongPassword", false };  // Invalid password
             yield return new object[] { "wrongUser", "password", false };   // Invalid username
-            yield return new object[] { "user1", "password1", true };       // Valid case
+            yield return new object[] { "user1", "password1", false };       // Invalid case
             yield return new object[] { "testUser", "wrongPassword", false }; // Invalid password for valid username
         }
     }

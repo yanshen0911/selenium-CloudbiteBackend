@@ -8,7 +8,6 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumTests.Data;
 using SeleniumTests.Helpers;
 using SeleniumTests.Pages;
-using System;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using TestContext = NUnit.Framework.TestContext;
 
