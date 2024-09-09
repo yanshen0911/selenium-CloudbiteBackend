@@ -7,7 +7,7 @@ namespace ERPPlus.SeleniumTests.Pages
     {
         private readonly IWebDriver driver;
 
-        [FindsBy(How = How.Id, Using = "username")]
+        [FindsBy(How = How.Id, Using = "userID")]
         private IWebElement UsernameField;
 
         [FindsBy(How = How.Id, Using = "password")]

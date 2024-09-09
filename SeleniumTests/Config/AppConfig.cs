@@ -2,6 +2,6 @@
 {
     public static class AppConfig
     {
-        public static string BaseUrl => "https://www.google.com";
+        public static string BaseUrl => "http://192.168.110.215";
     }
 }

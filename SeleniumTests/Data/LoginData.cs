@@ -7,18 +7,18 @@ namespace SeleniumTests.Data
         // Valid login credentials
         public static IEnumerable<object[]> ValidLoginData()
         {
-            yield return new object[] { "admin", "password" };
-            yield return new object[] { "user1", "password1" };
-            yield return new object[] { "testUser", "testPassword" };
+            yield return new object[] { "admin", "password", true };
         }
 
         // Invalid login credentials (mixing invalid usernames and passwords)
         public static IEnumerable<object[]> InvalidLoginData()
         {
-            yield return new object[] { "wrongUser", "password" };  // Invalid username, valid password
-            yield return new object[] { "admin", "wrongPassword" }; // Valid username, invalid password
-            yield return new object[] { "", "" };                   // Empty username and password
-            yield return new object[] { "nonExistentUser", "wrongPassword" }; // Both username and password are invalid
+            yield return new object[] { "wrongUser", "password", false };  // Invalid username, valid password
+            yield return new object[] { "admin", "wrongPassword", false }; // Valid username, invalid password
+            yield return new object[] { "", "", false };                   // Empty username and password
+            yield return new object[] { "", "password", false };                   // Empty username and password
+            yield return new object[] { "admin", "", false };                   // Empty username and password
+            yield return new object[] { "nonExistentUser", "wrongPassword", false }; // Both username and password are invalid
         }
 
         // Mixed login credentials (both valid and invalid for data-driven testing)

@@ -1,16 +1,12 @@
-﻿using ERPPlus.SeleniumTests.Config;
-using ERPPlus.SeleniumTests.Drivers;
+﻿using ERPPlus.SeleniumTests.Drivers;
 using ERPPlus.SeleniumTests.Pages;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumTests.Data;
 using SeleniumTests.Helpers;
 using SeleniumTests.Pages;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-
-
 
 namespace SeleniumTests.Tests.Functional.Login
 {
@@ -32,6 +28,9 @@ namespace SeleniumTests.Tests.Functional.Login
 
             // Initialize WebDriverWait with a timeout of 30 seconds
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
+
+            // Initialize LoginHelper
+            loginHelper = new LoginHelper(driver, wait);
         }
 
         // Data-driven test using NUnit TestCase attribute
@@ -40,6 +39,7 @@ namespace SeleniumTests.Tests.Functional.Login
         [TestCase("admin", "wrongPassword", false)] // Invalid password
         [TestCase("wrongUser", "password", false)] // Invalid username + valid password
         [TestCase("", "", false)] // Empty username and empty password
+        //[Test, TestCaseSource(typeof(LoginData), nameof(LoginData.InvalidLoginData))]
         public void TestValidLogin(string username, string password, bool isValidLogin)
         {
             // Perform login using the helper
@@ -54,26 +54,7 @@ namespace SeleniumTests.Tests.Functional.Login
             else
             {
                 // Assert login failed and user is still on the login page
-                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
-            }
-        }
-
-        // Use test case data from TestData.cs
-        [Test, TestCaseSource(typeof(LoginData), nameof(LoginData.MixedLoginData))]
-        public void TestValidLogin_WithData(string username, string password, bool isValidLogin)
-        {
-            // Perform login using the helper
-            loginHelper.PerformLogin(username, password);
-
-            // Validate the login
-            if (isValidLogin)
-            {
-                // Assert login was successful
-                Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
-            }
-            else
-            {
-                // Assert login failed and user is still on the login page
+                // need to get the error mesasge and check in depth moving forward
                 Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
             }
         }

@@ -13,13 +13,10 @@ namespace SeleniumTests.Pages
             this.driver = driver;
             PageFactory.InitElements(driver, this);
         }
-        // Define the locator as a By object instead of just IWebElement
-        public By BreadCrumbLocator => 
-            By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[1]/div/div");
 
-        // Update the locator for the BreadCrumb to a more specific XPath
-        [FindsBy(How = How.XPath, 
-            Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[1]/div/div")]
+        public By BreadCrumbLocator => By.ClassName("breadcrumb-container");
+ 
+        [FindsBy(How = How.ClassName, Using = "breadcrumb-container")]
         public IWebElement BreadCrumb;
 
         // Locator for the welcome message div using XPath to target the h2 element with specific text
@@ -63,43 +60,38 @@ namespace SeleniumTests.Pages
 
         }
 
-        //// Method to switch the language based on the language code
-        //public void SwitchLanguage(string languageCode)
-        //{
-
-        //    UserProfileDropDown.Click(); // Open user profile dropdown
-
-        //    // Wait until the dropdown is visible and clickable
-        //    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-        //    wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(LanguageDropDown));
-
-        //    // Create a SelectElement to interact with the dropdown
-        //    LanguageDropDown.Click();
-        //    SelectElement selectLanguage = new SelectElement(LanguageDropDown);
-        //    LanguageDropDown.Click();
-
-        //    selectLanguage.SelectByValue(languageCode); 
-        
-        //}
-
         // Method to switch the language based on the language code
         public void SwitchLanguage(string languageCode)
         {
-            // Open the language dropdown
-            LanguageDropDown.Click();
+            UserProfileDropDown.Click(); // Open user profile dropdown
 
-            // Wait for the dropdown to be visible and clickable
+            // Wait until the language dropdown is visible and clickable
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.Id("selLanguage")));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(LanguageDropDown));
 
-            // Open the dropdown for languages
-            SelectElement languageSelect = new SelectElement(LanguageDropDown);
+            // Interact with the dropdown to change the language
+            LanguageDropDown.Click();
+            SelectElement selectLanguage = new SelectElement(LanguageDropDown);
 
-            // Select the appropriate language by value (language code)
-            languageSelect.SelectByValue(languageCode);
+            // Check if the languageCode exists in the dropdown options
+            var availableOptions = selectLanguage.Options.Select(o => o.GetAttribute("value")).ToList();
 
-            // Ensure the page updates by waiting for the language switch to take effect
-            wait.Until(d => d.FindElement(BreadCrumbLocator).Text != string.Empty); // Ensure breadcrumb changes after language switch
+            if (!availableOptions.Contains(languageCode))
+            {
+                throw new NoSuchElementException($"The language code '{languageCode}' is not available in the language dropdown.");
+            }
+
+            // If it exists, proceed with selecting the language
+            selectLanguage.SelectByValue(languageCode);
+
+            // Ensure that the DOM has refreshed after the language switch
+            wait.Until(driver =>
+            {
+                // Wait for a specific element or some indicator that the language switch has finished
+                return driver.FindElement(BreadCrumbLocator).Displayed;  // Or any reliable element indicating completion
+            });
         }
+
+
     }
 }
