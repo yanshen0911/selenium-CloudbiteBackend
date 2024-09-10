@@ -1,4 +1,7 @@
-﻿using ERPPlus.SeleniumTests.Config;
+﻿using Allure.Net.Commons;
+using Allure.NUnit;
+using Allure.NUnit.Attributes;
+using ERPPlus.SeleniumTests.Config;
 using ERPPlus.SeleniumTests.Drivers;
 using ERPPlus.SeleniumTests.Pages;
 using NUnit.Framework;
@@ -10,6 +13,9 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 namespace SeleniumTests.Tests.Functional.Login
 {
     [TestFixture]
+    [AllureNUnit]  // Enable Allure reporting
+    [AllureSuite("Logout Tests")]  // Group this class under "Logout Tests"
+    [AllureEpic("User Authentication")]  // Assign this class to the "User Authentication" epic
     public class LogoutTest
     {
         private IWebDriver driver;
@@ -18,6 +24,7 @@ namespace SeleniumTests.Tests.Functional.Login
         private WebDriverWait wait;
 
         [SetUp]
+        [AllureStep("Setting up WebDriver and logging in")]
         public void SetUp()
         {
             driver = DriverFactory.CreateDriver(); // Get WebDriver instance from DriverFactory
@@ -43,9 +50,12 @@ namespace SeleniumTests.Tests.Functional.Login
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.normal)]  // Mark this test as normal severity
+        [AllureOwner("Keith Chu")]  // Specify the test owner
+        [AllureFeature("Logout Feature")]  // Assign this test to the "Logout Feature"
+        [AllureStory("Successful Logout")]  // Story to describe successful logout functionality
         public void TestLogout()
         {
-            //dashboardPage.UserProfileDropDown
             // Perform logout
             dashboardPage.Logout();
 
@@ -55,6 +65,7 @@ namespace SeleniumTests.Tests.Functional.Login
         }
 
         [TearDown]
+        [AllureStep("Closing browser after test")]
         public void TearDown()
         {
             driver.Quit(); // Ensure WebDriver is properly closed

@@ -1,4 +1,6 @@
-﻿using ERPPlus.SeleniumTests.Config;
+﻿using Allure.NUnit.Attributes; // Add this for Allure attributes
+using Allure.Net.Commons; // Add this for Allure metadata
+using ERPPlus.SeleniumTests.Config;
 using ERPPlus.SeleniumTests.Drivers;
 using ERPPlus.SeleniumTests.Pages;
 using NUnit.Framework;
@@ -10,10 +12,14 @@ using SeleniumTests.Helpers;
 using SeleniumTests.Pages;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using TestContext = NUnit.Framework.TestContext;
+using Allure.NUnit;
 
 namespace SeleniumTests.Tests.Functional.Language
 {
     [TestFixture]
+    [AllureNUnit] // This enables Allure reporting for the entire test class
+    [AllureEpic("Language Switch Tests")] // Grouping the tests under an epic
+    [AllureFeature("BreadCrumb Language Switch")] // Feature-level grouping
     public class SwitchLanguageTest
     {
         private IWebDriver driver;
@@ -24,71 +30,52 @@ namespace SeleniumTests.Tests.Functional.Language
         private LanguageHelper languageHelper;
 
         [SetUp]
+        [AllureBefore("Starting Browser and Logging In")] // Describes the setup as part of the report
         public void SetUp()
         {
-            driver = DriverFactory.CreateDriver(); // Get WebDriver instance from DriverFactory
-            loginPage = new LoginPage(driver); // Initialize login page object
-            dashboardPage = new Dashboard(driver); // Initialize dashboard page object
-            testHelper = new TestHelper(driver); // Initialize the TestHelper
+            driver = DriverFactory.CreateDriver();
+            loginPage = new LoginPage(driver);
+            dashboardPage = new Dashboard(driver);
+            testHelper = new TestHelper(driver);
 
             driver.Manage().Window.Maximize();
-
-            // Initialize WebDriverWait with a timeout of 30 seconds
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
 
-            // Navigate to login and perform login first before testing
             driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
 
-            // Perform login with valid credentials
             loginPage.EnterUsername("admin");
             loginPage.EnterPassword("password");
             loginPage.ClickLoginButton();
 
-            // Validate successful login by checking for the dashboard URL
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("/dashboard"));
             Assert.IsTrue(driver.Url.Contains("/dashboard"), "Login failed when it should have succeeded.");
 
             languageHelper = new LanguageHelper(driver, wait);
-
         }
 
-        //[Test]
-        //[TestCase("en", "Dashboard", true)]  // True positive: English switch succeeds, correct text displayed
-        //[TestCase("zh", "Dashboard", false)]  // False positive: Chinese switch should not display English text
-        //[TestCase("invalid_code", "Dashboard", false)]  // True negative: Invalid language should not succeed
-        //[TestCase("ja", "Dashboard", false)]  // False negative: Japanese switch incorrectly displays English text
-        //[TestCase("ja", "ダッシュボード", true)]  // True positive: Japanese switch succeeds, correct text displayed
-        //[Test, TestCaseSource(typeof(LanguageData), nameof(LanguageData.MixedLanguageData))]
-        [Test, TestCaseSource(typeof(LanguageData), nameof(LanguageData.InvalidLanguageData))]
+        [Test]
+        [AllureSeverity(SeverityLevel.critical)] // Define severity level
+        [AllureOwner("KeithChu")] // Assign test owner
+        [AllureStory("Switch Language and Verify Breadcrumb Text")] // Assign story under feature
+        [TestCaseSource(typeof(LanguageData), nameof(LanguageData.InvalidLanguageData))]
         public void VerifyBreadCrumbText(string languageCode, string expectedText, bool isValidText)
         {
             testHelper.LogTestResult($"Starting test for language: {languageCode}");
 
             if (languageCode == "invalid_code")
             {
-                // Expecting an exception for invalid language code
-                Assert.ThrowsException<NoSuchElementException>(() => dashboardPage.SwitchLanguage(languageCode), 
+                Assert.ThrowsException<NoSuchElementException>(() => dashboardPage.SwitchLanguage(languageCode),
                     $"Expected NoSuchElementException when switching to invalid language code: {languageCode}");
-                return; // Exit the test early since the invalid language is expected to fail
+                return;
             }
 
-            // Switch the language
             dashboardPage.SwitchLanguage(languageCode);
-
-            // Wait for the breadcrumb element to be present after the language change
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(dashboardPage.BreadCrumbLocator));
 
-            // After the page refresh, re-locate the breadcrumb element
             var breadCrumbElement = driver.FindElement(dashboardPage.BreadCrumbLocator);
+            string actualBreadCrumbText = RetryUntilSuccess(() => breadCrumbElement.Text);
 
-            // Retry mechanism for the breadcrumb text in case of stale element
-            string actualBreadCrumbText = RetryUntilSuccess(() =>
-            {
-                return breadCrumbElement.Text;
-            });
-
-            // Assert the correctness of the breadcrumb text
             if (isValidText)
             {
                 Assert.IsTrue(actualBreadCrumbText == expectedText, $"Expected '{expectedText}', but got '{actualBreadCrumbText}' for language: {languageCode}");
@@ -99,6 +86,18 @@ namespace SeleniumTests.Tests.Functional.Language
             }
 
             testHelper.LogTestResult($"Finished test for language: {languageCode}");
+        }
+
+        [TearDown]
+        [AllureAfter("Closing Browser")] // Describes the teardown in the report
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                testHelper.TakeScreenshot(TestContext.CurrentContext.Test.Name);
+            }
+
+            driver.Quit();
         }
 
         public string RetryUntilSuccess(Func<string> action, int retryCount = 3)
@@ -113,23 +112,11 @@ namespace SeleniumTests.Tests.Functional.Language
                 {
                     if (attempt == retryCount - 1)
                     {
-                        throw;  // Rethrow the exception if retries are exhausted
+                        throw;
                     }
                 }
             }
             return null;
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            // Capture a screenshot on failure
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-            {
-                testHelper.TakeScreenshot(TestContext.CurrentContext.Test.Name);
-            }
-
-            driver.Quit(); // Ensure WebDriver is properly closed
         }
     }
 }
