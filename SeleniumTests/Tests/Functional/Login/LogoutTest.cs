@@ -14,8 +14,8 @@ namespace SeleniumTests.Tests.Functional.Login
 {
     [TestFixture]
     [AllureNUnit]  // Enable Allure reporting
-    [AllureSuite("Logout Tests")]  // Group this class under "Logout Tests"
-    [AllureEpic("User Authentication")]  // Assign this class to the "User Authentication" epic
+    [AllureSuite("Login")] // use this ties to module
+    [AllureEpic("ERP-79")] // use this and ties to ticket number
     public class LogoutTest
     {
         private IWebDriver driver;
@@ -51,9 +51,7 @@ namespace SeleniumTests.Tests.Functional.Login
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)]  // Mark this test as normal severity
-        [AllureOwner("Keith Chu")]  // Specify the test owner
-        [AllureFeature("Logout Feature")]  // Assign this test to the "Logout Feature"
-        [AllureStory("Successful Logout")]  // Story to describe successful logout functionality
+        [AllureStory("Login Logout 5")] // combo with field in excel, Module|Feature Test|Case
         public void TestLogout()
         {
             // Perform logout

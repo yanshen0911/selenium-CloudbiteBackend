@@ -17,9 +17,9 @@ using Allure.NUnit;
 namespace SeleniumTests.Tests.Functional.Language
 {
     [TestFixture]
-    [AllureNUnit] // This enables Allure reporting for the entire test class
-    [AllureEpic("Language Switch Tests")] // Grouping the tests under an epic
-    [AllureFeature("BreadCrumb Language Switch")] // Feature-level grouping
+    [AllureNUnit]
+    [AllureSuite("Language")] // use this ties to module
+    [AllureEpic("ERP-80")] // use this and ties to ticket number
     public class SwitchLanguageTest
     {
         private IWebDriver driver;
@@ -57,11 +57,11 @@ namespace SeleniumTests.Tests.Functional.Language
         [Test]
         [AllureSeverity(SeverityLevel.critical)] // Define severity level
         [AllureOwner("KeithChu")] // Assign test owner
-        [AllureStory("Switch Language and Verify Breadcrumb Text")] // Assign story under feature
+        [AllureStory("Language Switch Language 1")] // Assign story under feature
         [TestCaseSource(typeof(LanguageData), nameof(LanguageData.InvalidLanguageData))]
         public void VerifyBreadCrumbText(string languageCode, string expectedText, bool isValidText)
         {
-            testHelper.LogTestResult($"Starting test for language: {languageCode}");
+            //testHelper.LogTestResult($"Starting test for language: {languageCode}");
 
             if (languageCode == "invalid_code")
             {
@@ -85,7 +85,7 @@ namespace SeleniumTests.Tests.Functional.Language
                 Assert.IsFalse(actualBreadCrumbText == expectedText, $"Unexpected match for '{expectedText}' when switching to language: {languageCode}");
             }
 
-            testHelper.LogTestResult($"Finished test for language: {languageCode}");
+            //testHelper.LogTestResult($"Finished test for language: {languageCode}");
         }
 
         [TearDown]
@@ -94,7 +94,7 @@ namespace SeleniumTests.Tests.Functional.Language
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                testHelper.TakeScreenshot(TestContext.CurrentContext.Test.Name);
+                //testHelper.TakeScreenshot(TestContext.CurrentContext.Test.Name);
             }
 
             driver.Quit();

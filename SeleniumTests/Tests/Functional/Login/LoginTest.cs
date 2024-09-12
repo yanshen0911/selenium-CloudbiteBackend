@@ -13,9 +13,9 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 namespace SeleniumTests.Tests.Functional.Login
 {
     [TestFixture]
-    [AllureNUnit]  // Enable Allure Reporting
-    [AllureSuite("Login Tests")]  // Group this class of tests under "Login Tests"
-    [AllureEpic("User Authentication")]  // Assign this class to the "User Authentication" feature
+    [AllureNUnit]  
+    [AllureSuite("Login")] // use this ties to module
+    [AllureEpic("ERP-79")] // use this and ties to ticket number
     public class LoginTest
     {
         private IWebDriver driver;
@@ -25,6 +25,7 @@ namespace SeleniumTests.Tests.Functional.Login
         private LoginHelper loginHelper;
 
         [SetUp]
+        [AllureStep("Setting up WebDriver")]
         public void SetUp()
         {
             driver = DriverFactory.CreateDriver(); // Get WebDriver instance from DriverFactory
@@ -41,15 +42,8 @@ namespace SeleniumTests.Tests.Functional.Login
 
         [Test]
         [AllureSeverity(SeverityLevel.critical)]  // Mark this test as critical
-        [AllureOwner("Keith Chu")]  // Specify the test owner
-        [AllureFeature("Valid Login")]  // Feature related to valid logins
-        [AllureStory("Login with valid credentials")]  // Specific story for this test
-        [TestCase("admin", "password", true)]  // Valid credentials
-        [AllureFeature("Invalid Login")]
-        [AllureStory("Login with invalid password")]  // Specific story for this test
-        [TestCase("admin", "wrongPassword", false)] // Invalid password
-        [TestCase("wrongUser", "password", false)] // Invalid username + valid password
-        [TestCase("", "", false)] // Empty username and empty password
+        [AllureStory("Login Login 1")]  // combo with field in excel, Module|Feature Test|Case
+        [TestCase("admin", "password", true)]  // test data
         public void TestValidLogin(string username, string password, bool isValidLogin)
         {
             // Perform login using the helper
@@ -64,6 +58,68 @@ namespace SeleniumTests.Tests.Functional.Login
             else
             {
                 // Assert login failed and user is still on the login page
+                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+            }
+        }
+
+        [Test]
+        [AllureSeverity(SeverityLevel.normal)]  // Mark this test as normal
+        [AllureStory("Login Login 2")] // combo with field in excel, Module|Feature Test|Case
+        [TestCase("admin", "wrongPassword", false)] // test data
+        public void TestInvalidLogin(string username, string password, bool isValidLogin)
+        {
+            // Perform login using the helper
+            loginHelper.PerformLogin(username, password);
+
+            // Validate the login
+            if (isValidLogin)
+            {
+                // Assert login was successful
+                Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
+            }
+            else
+            {
+                // Assert login failed and user is still on the login page
+                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+            }
+        }
+
+        [Test]
+        [AllureSeverity(SeverityLevel.normal)] // Mark this test as normal
+        [AllureStory("Login Login 3")] // combo with field in excel, Module|Feature Test|Case
+        [TestCase("", "", false)]  // test data
+        public void TestLoginWithEmptyFields(string username, string password, bool isValidLogin)
+        {
+            // Perform login using the helper
+            loginHelper.PerformLogin(username, password);
+
+            // Validate the login
+            if (isValidLogin)
+            {
+                Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
+            }
+            else
+            {
+                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+            }
+        }
+
+        [Test]
+        [AllureSeverity(SeverityLevel.normal)] // Mark this test as normal
+        [AllureStory("Login Login 4")] // combo with field in excel, Module|Feature Test|Case
+        [TestCase("105 OR 1=1", "105 OR 1=1", false)]  // Empty username and empty password
+        public void TestLoginWithSQLInjection(string username, string password, bool isValidLogin)
+        {
+            // Perform login using the helper
+            loginHelper.PerformLogin(username, password);
+
+            // Validate the login
+            if (isValidLogin)
+            {
+                Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
+            }
+            else
+            {
                 Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
             }
         }
