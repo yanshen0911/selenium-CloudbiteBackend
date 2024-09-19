@@ -29,7 +29,7 @@ namespace ERPPlus.IntegrationTests.Tests.API
             request.AddJsonBody(serverModel);
             var response = client.Execute(request);
 
-            Assert.AreEqual(200, (int)response.StatusCode);
+            Assert.That((int)response.StatusCode, Is.EqualTo(200));
             Assert.IsNotNull(response.Content); // Check that the server list is returned
         }
 
