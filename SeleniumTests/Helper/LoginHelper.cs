@@ -19,10 +19,12 @@ namespace SeleniumTests.Helpers
             _loginPage = new LoginPage(_driver);
         }
 
-        public void PerformLogin(string username, string password)
+        public void PerformLogin(string username, string password, bool isNavigateToLogin = true)
         {
-            // Navigate to login page
-            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+            if (isNavigateToLogin)
+            {
+                _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+            }
 
             // Wait for login form to be visible
             _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
@@ -39,6 +41,27 @@ namespace SeleniumTests.Helpers
         public bool IsLoggedIn()
         {
             return _driver.Url.Contains("/dashboard");
+        }
+
+        public IList<string> GetValidationMessages()
+        {
+            return _loginPage.GetValidationMessages();
+        }
+
+        public void SelectServer(string serverName, bool isNavigateToLogin = true) 
+        {
+            // Navigate to login page
+            if (isNavigateToLogin)
+            {
+                _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+            }
+
+            // Wait for login form to be visible
+            _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
+
+            _loginPage.ClickSelectServerButton();
+            _loginPage.SelectServerByText(serverName);
+            _loginPage.ClickSelectServerOKButton();
         }
     }
 }

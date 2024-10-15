@@ -43,11 +43,12 @@ namespace SeleniumTests.Tests.Functional.Login
         [Test]
         [AllureSeverity(SeverityLevel.critical)]  // Mark this test as critical
         [AllureStory("Login Login 1")]  // combo with field in excel, Module|Feature Test|Case
-        [TestCase("admin", "password", true)]  // test data
+        [TestCase("QAS", "5162", true)]  // test data
         public void TestValidLogin(string username, string password, bool isValidLogin)
         {
+            loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
             // Perform login using the helper
-            loginHelper.PerformLogin(username, password);
+            loginHelper.PerformLogin(username, password,false);
 
             // Validate the login
             if (isValidLogin)
@@ -90,17 +91,24 @@ namespace SeleniumTests.Tests.Functional.Login
         [TestCase("", "", false)]  // test data
         public void TestLoginWithEmptyFields(string username, string password, bool isValidLogin)
         {
-            // Perform login using the helper
             loginHelper.PerformLogin(username, password);
 
-            // Validate the login
             if (isValidLogin)
             {
+                // Assert login was successful
                 Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
             }
             else
             {
+                // Assert login failed and validation errors are shown
+                IList<string> validationMessages = loginHelper.GetValidationMessages();
+
                 Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+
+                // Validate that the "Server is required" message is shown
+                Assert.IsTrue(validationMessages.Contains("User ID is required."), "Expected validation message 'User ID is required.' not found.");
+                Assert.IsTrue(validationMessages.Contains("Password is required."), "Expected validation message 'Password is required.' not found.");
+                //Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
             }
         }
 
