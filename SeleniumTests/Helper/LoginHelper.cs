@@ -57,7 +57,8 @@ namespace SeleniumTests.Helpers
             }
 
             // Wait for login form to be visible
-            _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
+            //_wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
+            _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[3]/div[2]/button")));
 
             _loginPage.ClickSelectServerButton();
             _loginPage.SelectServerByText(serverName);

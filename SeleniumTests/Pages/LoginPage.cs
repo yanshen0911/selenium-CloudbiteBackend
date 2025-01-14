@@ -16,7 +16,8 @@ namespace ERPPlus.SeleniumTests.Pages
         private IWebElement PasswordField;
 
         //var loginButton = driver.FindElement(By.CssSelector("button.btn.primaryActionBtn.imgBtn"));
-        [FindsBy(How = How.CssSelector, Using = "button.btn.primaryActionBtn.imgBtn")]
+        //btn primaryActionBtn imgBtn
+        [FindsBy(How = How.CssSelector, Using = "btn.primaryActionBtn.imgBtn")]
         private IWebElement LoginButton;
 
         public LoginPage(IWebDriver driver)
@@ -48,7 +49,7 @@ namespace ERPPlus.SeleniumTests.Pages
             return driver.Url.Contains("/dashboard");
         }
 
-        [FindsBy(How = How.ClassName, Using = "select-server-btn")]
+        [FindsBy(How = How.CssSelector, Using = ".imgBtn.select-server-btn")]
         private IWebElement SelectServerButton;
 
         // Corrected OK and Cancel button selectors based on new HTML structure
