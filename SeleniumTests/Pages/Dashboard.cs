@@ -20,11 +20,11 @@ namespace SeleniumTests.Pages
         public IWebElement BreadCrumb;
 
         // Locator for the welcome message div using XPath to target the h2 element with specific text
-        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/app-dashboard/div[2]/div/div/h2")]
+        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-dashboard/div[2]/div")]
         private IWebElement WelcomeMessageDiv;
 
 
-        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-toolbar/div[4]/span")]
+        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-toolbar/div[8]")]
         private IWebElement UserProfileDropDown;
 
         [FindsBy(How = How.XPath, Using = "//*[@id=\"mat-menu-panel-0\"]/div/button/span/div")]

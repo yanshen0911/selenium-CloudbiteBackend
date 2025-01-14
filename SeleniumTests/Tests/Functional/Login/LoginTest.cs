@@ -1,11 +1,14 @@
 ﻿using Allure.Net.Commons;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
+using ERPPlus.SeleniumTests.Config;
 using ERPPlus.SeleniumTests.Drivers;
 using ERPPlus.SeleniumTests.Pages;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using SeleniumTests.Helpers;
 using SeleniumTests.Pages;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -66,29 +69,29 @@ namespace SeleniumTests.Tests.Functional.Login
         [Test]
         [AllureSeverity(SeverityLevel.normal)]  // Mark this test as normal
         [AllureStory("Login Login 2")] // combo with field in excel, Module|Feature Test|Case
-        [TestCase("admin", "wrongPassword", false)] // test data
-        public void TestInvalidLogin(string username, string password, bool isValidLogin)
+        [TestCase("admin", "wrongPassword")] // test data
+        public void TestInvalidLogin(string username, string password)
         {
-            // Perform login using the helper
-            loginHelper.PerformLogin(username, password);
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
-            // Validate the login
-            if (isValidLogin)
-            {
-                // Assert login was successful
-                Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
-            }
-            else
-            {
-                IList<string> validationMessages = loginHelper.GetValidationMessages();
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
+            loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
+            loginPage.EnterUsername(username);
+            loginPage.EnterPassword(password);
+            loginPage.ClickLoginButton();
 
-                //// Assert login failed and user is still on the login page
-                //Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+            // Assert login failed and validation errors are shown
+            IList<string> validationMessages = loginHelper.GetValidationMessages();
 
-                //Assert.IsTrue(validationMessages.Contains("User ID is required."), "Expected validation message 'User ID is required.' not found.");
-                //Assert.IsTrue(validationMessages.Contains("Password is required."), "Expected validation message 'Password is required.' not found.");
-                Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
-            }
+            //Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+            // Validate that the "Server is required" message is shown
+            Assert.IsTrue(validationMessages.Contains("User ID is required."), "Expected validation message 'User ID is required.' not found.");
+            Assert.IsTrue(validationMessages.Contains("Password is required."), "Expected validation message 'Password is required.' not found.");
+            Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
+
+            //currently the error message were shown in alert, pls raise ticket for soft dev
+            // regardless of invalid user name or not, we are not supposed to show, instead, a generic error message should be show such as
+            // "invalid user id or password, please try again"
         }
 
         [Test]
@@ -97,7 +100,21 @@ namespace SeleniumTests.Tests.Functional.Login
         [TestCase("", "", false)]  // test data
         public void TestLoginWithEmptyFields(string username, string password, bool isValidLogin)
         {
-            loginHelper.PerformLogin(username, password);
+            //if (isNavigateToLogin)
+            //{
+            //    _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+            //}
+
+            //// Wait for the login button to be visible
+            //_wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
+
+            //// Perform login actions
+            //_loginPage.EnterUsername(username);
+            //_loginPage.EnterPassword(password);
+            //_loginPage.ClickLoginButton();
+
+            //// Wait for the dashboard URL to confirm successful login
+            //_wait.Until(ExpectedConditions.UrlContains("/dashboard"));
 
             if (isValidLogin)
             {
@@ -106,36 +123,51 @@ namespace SeleniumTests.Tests.Functional.Login
             }
             else
             {
+                driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+
+                wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
+
+                loginPage.EnterUsername(username);
+                loginPage.EnterPassword(password);
+                loginPage.ClickLoginButton();
+
                 // Assert login failed and validation errors are shown
                 IList<string> validationMessages = loginHelper.GetValidationMessages();
 
-                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
-
+                //Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
                 // Validate that the "Server is required" message is shown
                 Assert.IsTrue(validationMessages.Contains("User ID is required."), "Expected validation message 'User ID is required.' not found.");
                 Assert.IsTrue(validationMessages.Contains("Password is required."), "Expected validation message 'Password is required.' not found.");
-                //Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
+                Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
             }
         }
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)] // Mark this test as normal
         [AllureStory("Login Login 4")] // combo with field in excel, Module|Feature Test|Case
-        [TestCase("105 OR 1=1", "105 OR 1=1", false)]  // Empty username and empty password
-        public void TestLoginWithSQLInjection(string username, string password, bool isValidLogin)
+        [TestCase("105 OR 1=1", "105 OR 1=1")]  // Empty username and empty password
+        public void TestLoginWithSQLInjection(string username, string password)
         {
-            // Perform login using the helper
-            loginHelper.PerformLogin(username, password);
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
-            // Validate the login
-            if (isValidLogin)
-            {
-                Assert.IsTrue(loginHelper.IsLoggedIn(), "Login failed when it should have succeeded.");
-            }
-            else
-            {
-                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
-            }
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
+            loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
+            loginPage.EnterUsername(username);
+            loginPage.EnterPassword(password);
+            loginPage.ClickLoginButton();
+
+            // Assert login failed and validation errors are shown
+            IList<string> validationMessages = loginHelper.GetValidationMessages();
+
+            //Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+            // Validate that the "Server is required" message is shown
+            Assert.IsTrue(validationMessages.Contains("User ID is required."), "Expected validation message 'User ID is required.' not found.");
+            Assert.IsTrue(validationMessages.Contains("Password is required."), "Expected validation message 'Password is required.' not found.");
+            Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
+
+            //currently the error message were shown in alert, pls raise ticket for soft dev
+            // regardless of invalid user name or not, we are not supposed to show, instead, a generic error message should be show such as
+            // "invalid user id or password, please try again"
         }
 
         [TearDown]

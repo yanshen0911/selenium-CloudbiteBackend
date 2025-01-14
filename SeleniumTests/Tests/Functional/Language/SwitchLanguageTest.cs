@@ -28,6 +28,7 @@ namespace SeleniumTests.Tests.Functional.Language
         private WebDriverWait wait;
         private TestHelper testHelper;
         private LanguageHelper languageHelper;
+        private LoginHelper _loginHelper;
 
         [SetUp]
         [AllureBefore("Starting Browser and Logging In")] // Describes the setup as part of the report
@@ -37,21 +38,17 @@ namespace SeleniumTests.Tests.Functional.Language
             loginPage = new LoginPage(driver);
             dashboardPage = new Dashboard(driver);
             testHelper = new TestHelper(driver);
+           
 
             driver.Manage().Window.Maximize();
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
-
             driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
 
-            loginPage.EnterUsername("admin");
-            loginPage.EnterPassword("password");
-            loginPage.ClickLoginButton();
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
+            _loginHelper = new LoginHelper(driver, wait);
+            _loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
+            _loginHelper.PerformLogin("QAS", "5162", false);
 
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("/dashboard"));
-            Assert.IsTrue(driver.Url.Contains("/dashboard"), "Login failed when it should have succeeded.");
-
-            languageHelper = new LanguageHelper(driver, wait);
+         
         }
 
         [Test]
@@ -61,6 +58,11 @@ namespace SeleniumTests.Tests.Functional.Language
         [TestCaseSource(typeof(LanguageData), nameof(LanguageData.InvalidLanguageData))]
         public void VerifyBreadCrumbText(string languageCode, string expectedText, bool isValidText)
         {
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("/dashboard"));
+            Assert.IsTrue(driver.Url.Contains("/dashboard"), "Login failed when it should have succeeded.");
+
+            languageHelper = new LanguageHelper(driver, wait);
+
             //testHelper.LogTestResult($"Starting test for language: {languageCode}");
 
             if (languageCode == "invalid_code")
