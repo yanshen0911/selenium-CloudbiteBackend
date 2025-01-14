@@ -15,9 +15,8 @@ namespace ERPPlus.SeleniumTests.Pages
         [FindsBy(How = How.Id, Using = "password")]
         private IWebElement PasswordField;
 
-        //var loginButton = driver.FindElement(By.CssSelector("button.btn.primaryActionBtn.imgBtn"));
-        //btn primaryActionBtn imgBtn
-        [FindsBy(How = How.CssSelector, Using = "btn.primaryActionBtn.imgBtn")]
+
+        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")]
         private IWebElement LoginButton;
 
         public LoginPage(IWebDriver driver)
@@ -75,7 +74,10 @@ namespace ERPPlus.SeleniumTests.Pages
         public void SelectServerByText(string serverText)
         {
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".form-check-input")));
+            //wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".form-check-input")));
+
+            //container-header
+            wait.Until(ExpectedConditions.ElementIsVisible(By.ClassName("container-wrapper")));
 
             // Find all the radio button elements
             IList<IWebElement> serverRadioButtons = driver.FindElements(By.CssSelector(".form-check-input"));

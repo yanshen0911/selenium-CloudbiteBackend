@@ -26,17 +26,18 @@ namespace SeleniumTests.Helpers
                 _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
             }
 
-            // Wait for login form to be visible
-            _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
+            // Wait for the login button to be visible
+            _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
 
             // Perform login actions
             _loginPage.EnterUsername(username);
             _loginPage.EnterPassword(password);
             _loginPage.ClickLoginButton();
 
-            // Wait for the dashboard URL
+            // Wait for the dashboard URL to confirm successful login
             _wait.Until(ExpectedConditions.UrlContains("/dashboard"));
         }
+
 
         public bool IsLoggedIn()
         {
@@ -56,9 +57,17 @@ namespace SeleniumTests.Helpers
                 _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
             }
 
-            // Wait for login form to be visible
-            //_wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
-            _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[3]/div[2]/button")));
+            // Wait for login form and login button to be visible
+            _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
+
+            //Console.WriteLine(driver.PageSource);  // Prints the entire page's HTML to the console
+
+            //// Or inspect the element directly
+            //Console.WriteLine(LoginButton.Text);  // Print the text of the button (if accessible)
+
+            //var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(3));
+            //IWebElement loginButton = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector("button.btn.primaryActionBtn.imgBtn")));
+
 
             _loginPage.ClickSelectServerButton();
             _loginPage.SelectServerByText(serverName);

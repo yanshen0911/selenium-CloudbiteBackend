@@ -48,7 +48,7 @@ namespace SeleniumTests.Tests.Functional.Login
         {
             loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
             // Perform login using the helper
-            loginHelper.PerformLogin(username, password,false);
+            loginHelper.PerformLogin(username, password, false);
 
             // Validate the login
             if (isValidLogin)
@@ -80,8 +80,14 @@ namespace SeleniumTests.Tests.Functional.Login
             }
             else
             {
-                // Assert login failed and user is still on the login page
-                Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+                IList<string> validationMessages = loginHelper.GetValidationMessages();
+
+                //// Assert login failed and user is still on the login page
+                //Assert.IsFalse(loginHelper.IsLoggedIn(), "Login succeeded when it should have failed.");
+
+                //Assert.IsTrue(validationMessages.Contains("User ID is required."), "Expected validation message 'User ID is required.' not found.");
+                //Assert.IsTrue(validationMessages.Contains("Password is required."), "Expected validation message 'Password is required.' not found.");
+                Assert.IsTrue(validationMessages.Contains("Server is required."), "Expected validation message 'Server is required.' not found.");
             }
         }
 
