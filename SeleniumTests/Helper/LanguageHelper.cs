@@ -2,6 +2,7 @@
 using SeleniumExtras.WaitHelpers;
 using OpenQA.Selenium.Support.UI;
 using SeleniumTests.Pages;
+using SeleniumTests.Pages.Store;
 
 namespace SeleniumTests.Helpers
 {
@@ -9,13 +10,13 @@ namespace SeleniumTests.Helpers
     {
         private IWebDriver _driver;
         private WebDriverWait _wait;
-        private Dashboard _dashboardPage;
+        private Pages.Dashboard _dashboardPage;
 
         public LanguageHelper(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;
             _wait = wait;
-            _dashboardPage = new Dashboard(_driver);
+            _dashboardPage = new Pages.Dashboard(_driver);
         }
 
         public void SwitchLanguage(string languageCode)

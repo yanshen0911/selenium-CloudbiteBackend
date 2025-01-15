@@ -13,6 +13,7 @@ using SeleniumTests.Pages;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using TestContext = NUnit.Framework.TestContext;
 using Allure.NUnit;
+using SeleniumTests.Pages.Store;
 
 namespace SeleniumTests.Tests.Functional.Language
 {
@@ -24,7 +25,7 @@ namespace SeleniumTests.Tests.Functional.Language
     {
         private IWebDriver driver;
         private LoginPage loginPage;
-        private Dashboard dashboardPage;
+        private Pages.Dashboard dashboardPage;
         private WebDriverWait wait;
         private TestHelper testHelper;
         private LanguageHelper languageHelper;
@@ -36,7 +37,7 @@ namespace SeleniumTests.Tests.Functional.Language
         {
             driver = DriverFactory.CreateDriver();
             loginPage = new LoginPage(driver);
-            dashboardPage = new Dashboard(driver);
+            dashboardPage = new Pages.Dashboard(driver);
             testHelper = new TestHelper(driver);
            
 

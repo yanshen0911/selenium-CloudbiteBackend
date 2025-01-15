@@ -11,6 +11,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using SeleniumTests.Helpers;
 using SeleniumTests.Pages;
+using SeleniumTests.Pages.Store;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace SeleniumTests.Tests.Functional.Login
@@ -24,7 +25,7 @@ namespace SeleniumTests.Tests.Functional.Login
         private IWebDriver driver;
         private LoginPage loginPage;
         private WebDriverWait wait;
-        private Dashboard dashboardPage;
+        private Pages.Dashboard dashboardPage;
         private LoginHelper loginHelper;
 
         [SetUp]
@@ -33,7 +34,7 @@ namespace SeleniumTests.Tests.Functional.Login
         {
             driver = DriverFactory.CreateDriver(); // Get WebDriver instance from DriverFactory
             loginPage = new LoginPage(driver); // Initialize login page object
-            dashboardPage = new Dashboard(driver); // Initialize dashboard page object
+            dashboardPage = new Pages.Dashboard(driver); // Initialize dashboard page object
             driver.Manage().Window.Maximize();
 
             // Initialize WebDriverWait with a timeout of 30 seconds
