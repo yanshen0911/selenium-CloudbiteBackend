@@ -41,7 +41,7 @@ namespace QASErpPlusAutomation.Tests.Store
 
             _loginHelper = new LoginHelper(_driver, _wait);
             _loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
-            _loginHelper.PerformLogin("QAS", "5162", false);
+            _loginHelper.PerformLogin(AppConfig.UserName, AppConfig.Password, false);
 
             WaitForPageToLoad();
             _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/store-stepper/store-country");
@@ -53,22 +53,33 @@ namespace QASErpPlusAutomation.Tests.Store
         [Test]
         public void TestSearchStoreCountry()
         {
-            _storeCountryPage.SearchStoreCountry("Malaysia");
+            string _strCode, _strDesc, _strOtherDesc;
+            _strCode = "MY8";
+            _strDesc = _strCode + " DESC";
+            _strOtherDesc = _strCode + " OTHER DESC";
+
+            WaitForElementToBeClickable(By.CssSelector("button.primaryActionBtn"));
+            _storeCountryPage.SearchStoreCountry(_strCode);
             WaitForTableToLoad();
-            Assert.IsTrue(_driver.PageSource.Contains("Malaysia"));
+            Assert.IsTrue(_driver.PageSource.Contains(_strCode));
         }
 
         [Test]
         public void TestAddNewStoreCountry()
         {
+            string _strCode, _strDesc, _strOtherDesc;
+            _strCode = "MY8";
+            _strDesc = _strCode + " DESC";
+            _strOtherDesc = _strCode + " OTHER DESC";
+
             // Step 1: Wait for and click the "New" button
             WaitForElementToBeClickable(By.CssSelector("button.primaryActionBtn"));
             _storeCountryPage.ClickNewButton();
 
             // Step 2: Enter values in the form fields
-            _storeCountryPage.EnterCode("MY7");
-            _storeCountryPage.EnterDescription("Malaysia7");
-            _storeCountryPage.EnterOtherDescription("Southeast Asia7");
+            _storeCountryPage.EnterCode(_strCode);
+            _storeCountryPage.EnterDescription(_strDesc);
+            _storeCountryPage.EnterOtherDescription(_strOtherDesc);
 
             // Step 3: Click the "Save" button
             _storeCountryPage.ClickSaveButton();

@@ -2,6 +2,9 @@
 {
     public static class AppConfig
     {
-        public static string BaseUrl => "http://192.168.110.215";
+        public static string BaseUrl => "http://192.168.110.215:888";
+        public static string UserName => "QASQA";
+        public static string Password => "5162";
+
     }
 }
