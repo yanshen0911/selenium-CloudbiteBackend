@@ -38,10 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tests\Store\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update=".runsettings">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
