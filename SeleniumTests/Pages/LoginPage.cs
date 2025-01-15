@@ -73,28 +73,46 @@ namespace ERPPlus.SeleniumTests.Pages
 
         public void SelectServerByText(string serverText)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            //wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".form-check-input")));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-            //container-header
-            wait.Until(ExpectedConditions.ElementIsVisible(By.ClassName("container-wrapper")));
+            // Wait for the server selection panel to be fully visible
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("mat-drawer.mat-drawer-opened")));
 
-            // Find all the radio button elements
-            IList<IWebElement> serverRadioButtons = driver.FindElements(By.CssSelector(".form-check-input"));
-
-            // Find all the corresponding labels
-            IList<IWebElement> serverLabels = driver.FindElements(By.CssSelector(".form-check-label"));
-
-            // Iterate through the labels and select the matching one
-            for (int i = 0; i < serverLabels.Count; i++)
+            // Retry logic to handle dynamic loading issues
+            for (int attempt = 0; attempt < 3; attempt++)
             {
-                if (serverLabels[i].Text.Trim().Equals(serverText.Trim()))
+                try
                 {
-                    serverRadioButtons[i].Click();
-                    break;
+                    // Find all radio buttons and labels
+                    IList<IWebElement> serverRadioButtons = driver.FindElements(By.CssSelector(".form-check-input"));
+                    IList<IWebElement> serverLabels = driver.FindElements(By.CssSelector(".form-check-label"));
+
+                    // Iterate through the labels to find the matching server
+                    for (int i = 0; i < serverLabels.Count; i++)
+                    {
+                        string labelText = serverLabels[i].Text.Trim();
+
+                        if (labelText.Equals(serverText.Trim(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.WriteLine($"Server found: {labelText}. Clicking the radio button.");
+                            serverRadioButtons[i].Click();
+                            return;
+                        }
+                    }
+
+                    // If not found, wait a bit and retry
+                    Thread.Sleep(1000);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Attempt {attempt + 1} failed: {ex.Message}");
                 }
             }
+
+            throw new NoSuchElementException($"Server with text '{serverText}' was not found.");
         }
+
+
 
         [FindsBy(How = How.CssSelector, Using = ".invalid-feedback")]
         private IList<IWebElement> ValidationMessages;
