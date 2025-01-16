@@ -55,12 +55,20 @@ namespace QASErpPlusAutomation.Tests.Store
         [Test]
         [AllureSeverity(SeverityLevel.normal)]
         [AllureStory("Store Store Country 1")]
-        public void TestCreateNewStoreCountry()
+        [TestCase("MY8", "Malaysia", "Asia")]
+        [TestCase("妈来西亚", "妈来西亚", "亚洲")]
+        [TestCase("AAAAAAAAAA", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
+        public void TestCreateNewStoreCountry(string Code, string Desc,string OtherDesc)
         {
             string _strCode, _strDesc, _strOtherDesc;
-            _strCode = "MY8";
-            _strDesc = _strCode + " DESC";
-            _strOtherDesc = _strCode + " OTHER DESC";
+
+            //_strCode = "MY8";
+            //_strDesc = _strCode + " DESC";
+            //_strOtherDesc = _strCode + " OTHER DESC";
+
+            _strCode = Code;
+            _strDesc = Desc;
+            _strOtherDesc = OtherDesc;
 
             // Step 1: Wait for and click the "New" button
             helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
@@ -89,20 +97,23 @@ namespace QASErpPlusAutomation.Tests.Store
         }
 
         [Test]
-        [AllureSeverity(SeverityLevel.critical)] // Define severity level
-        [AllureOwner("KeithChu")] // Assign test owner
-        [AllureStory("Language Switch Language 1")] // Assign story under feature
-        public void TestSearchStoreCountry()
+        [AllureSeverity(SeverityLevel.normal)]
+        [AllureOwner("KeithChu")] 
+        [AllureStory("Store Store Country 7")]
+        [TestCase("MY8")]
+        [TestCase("Malaysia")]
+        [TestCase("MALAYSIA")]
+        [TestCase("malaysia")]
+        [TestCase("AAAAAAAAAA")]
+        [TestCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
+        [TestCase("sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
+        public void TestSearchStoreCountry(string searchText)
         {
-            string _strCode, _strDesc, _strOtherDesc;
-            _strCode = "MY8";
-            _strDesc = _strCode + " DESC";
-            _strOtherDesc = _strCode + " OTHER DESC";
-
-            helperFunction.WaitForElementToBeClickable( _wait, By.CssSelector("button.primaryActionBtn"));
-            _storeCountryPage.SearchStoreCountry(_strCode);
+            helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
+            _storeCountryPage.SearchStoreCountry(searchText);
             helperFunction.WaitForTableToLoad(_wait);
-            Assert.IsTrue(_driver.PageSource.Contains(_strCode));
+            helperFunction.TakeScreenshot(_driver, "Store", "Store", "Store Country", "7");
+            Assert.IsTrue(_driver.PageSource.Contains(searchText));
         }
 
         [TearDown]

@@ -72,6 +72,7 @@ namespace SeleniumTests.Helper
 
                 // Generate a unique filename with timestamp, module, feature, test case, and URL
                 string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm_ss_ffff");
+
                 string filePath = Path.Combine(
                     folderPath,
                     $"{sanitizedUrl}.{module}.{feature}.{testCase}.{timestamp}.png"
