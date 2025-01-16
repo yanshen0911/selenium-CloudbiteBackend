@@ -47,7 +47,7 @@ namespace SeleniumTests.Tests.Functional.Language
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
             _loginHelper = new LoginHelper(driver, wait);
             _loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
-            _loginHelper.PerformLogin("QAS", "5162", false);
+            _loginHelper.PerformLogin(AppConfig.UserName, AppConfig.Password, false);
 
          
         }
