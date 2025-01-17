@@ -54,10 +54,11 @@ namespace QASErpPlusAutomation.Tests.Store
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Store Store Country 1")]
+        [AllureStory("Store Store Country Create")]
         [TestCase("MY8", "Malaysia", "Asia")]
         [TestCase("妈来西亚", "妈来西亚", "亚洲")]
         [TestCase("AAAAAAAAAA", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
+        [TestCase("#$#%^", "$^$W#^%", "$^$#^")]
         public void TestCreateNewStoreCountry(string Code, string Desc,string OtherDesc)
         {
             string _strCode, _strDesc, _strOtherDesc;
@@ -90,6 +91,7 @@ namespace QASErpPlusAutomation.Tests.Store
             string alertText = alertElement.Text;
             alertText = alertText.ToUpper();
             Console.WriteLine("Alert Message: " + alertText);
+
             Assert.IsTrue(alertText.Contains("SUCCESS"), "The save operation was not successful.");
 
             // Optional: Wait for the URL to redirect (if needed)
@@ -98,8 +100,57 @@ namespace QASErpPlusAutomation.Tests.Store
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)]
+        [AllureStory("Edit Store Country")]
+        [TestCase("MY8", "New Description", "New Other Description")]
+        [TestCase("妈来西亚", "Updated Description", "Updated Other Description")]
+        public void TestEditStoreCountry(string Code, string NewDesc, string NewOtherDesc)
+        {
+            // Step 1: Search for the existing store country by its code
+            helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
+            _storeCountryPage.SearchStoreCountry(Code);
+            helperFunction.WaitForTableToLoad(_wait);
+
+            // Step 2: Click the Edit button
+            helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector(".btn-edit-hover"));
+            _storeCountryPage.ClickEditButton();
+
+            // Step 3: Ensure the Code field is not editable
+            var isCodeEditable = _storeCountryPage.CodeInput.GetAttribute("readonly") != null;
+            Assert.IsTrue(isCodeEditable, "Code field should not be editable.");
+
+            // Step 4: Update the Description and Other Description fields
+            _storeCountryPage.EnterDescription(NewDesc);
+            _storeCountryPage.EnterOtherDescription(NewOtherDesc);
+            helperFunction.TakeScreenshot(_driver, "Store", "Store", "Edit Store Country", "2");
+
+            // Step 5: Click the Save button
+            _storeCountryPage.ClickSaveButton();
+
+            // Step 6: Wait for the alert message to appear
+            var alertElement = helperFunction.WaitForElementToBeVisible(_wait, By.CssSelector("div[role='alert']"));
+            helperFunction.TakeScreenshot(_driver, "Store", "Store", "Edit Store Country", "2");
+
+            // Step 7: Verify the success message in the alert
+            string alertText = alertElement.Text.ToUpper();
+            Console.WriteLine("Alert Message: " + alertText);
+            Assert.IsTrue(alertText.Contains("SUCCESS"), "The edit operation was not successful.");
+
+            // Step 8: Wait for the redirection back to the store country list
+            helperFunction.WaitForUrlToContain(_wait, "/store-stepper/store-country");
+
+            // Step 9: Re-Search the edited store country and validate changes
+            _storeCountryPage.SearchStoreCountry(Code);
+            helperFunction.WaitForTableToLoad(_wait);
+
+            // Step 10: Assert that the updated Description and Other Description are displayed in the table or details view
+            Assert.IsTrue(_driver.PageSource.Contains(NewDesc), "Updated Description was not saved successfully.");
+            Assert.IsTrue(_driver.PageSource.Contains(NewOtherDesc), "Updated Other Description was not saved successfully.");
+        }
+
+        [Test]
+        [AllureSeverity(SeverityLevel.normal)]
         [AllureOwner("KeithChu")] 
-        [AllureStory("Store Store Country 7")]
+        [AllureStory("Store Store Country Search")]
         [TestCase("MY8")]
         [TestCase("Malaysia")]
         [TestCase("MALAYSIA")]

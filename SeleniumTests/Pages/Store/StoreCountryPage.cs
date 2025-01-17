@@ -54,7 +54,7 @@ namespace SeleniumTests.Pages.Store
 
         // New Elements
         [FindsBy(How = How.Id, Using = "code")]
-        private IWebElement CodeInput { get; set; }
+        public IWebElement CodeInput { get; set; }
 
         [FindsBy(How = How.Id, Using = "desc")]
         private IWebElement DescriptionInput { get; set; }
