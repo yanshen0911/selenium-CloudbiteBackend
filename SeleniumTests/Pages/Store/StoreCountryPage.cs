@@ -84,10 +84,16 @@ namespace SeleniumTests.Pages.Store
             EditButton.Click();
         }
 
-        public void ClickDeleteButton()
+        public void DeleteStoreCountryByCode(string code)
         {
-            DeleteButton.Click();
+            // Locate the row by its code
+            string xpath = $"//tr[td[text()='{code}']]//button[contains(@class, 'btn-delete-hover')]";
+            var deleteButton = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
+
+            // Click the delete button
+            deleteButton.Click();
         }
+
 
         public void ClickUploadButton()
         {
@@ -144,5 +150,25 @@ namespace SeleniumTests.Pages.Store
             var saveButton = _wait.Until(ExpectedConditions.ElementToBeClickable(SaveButton));
             saveButton.Click();
         }
+
+        public void ConfirmDelete(bool confirm)
+        {
+            // Wait for the confirmation dialog to appear
+            var dialogContainer = _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".dialog-container")));
+
+            if (confirm)
+            {
+                // Click the "OK" button to confirm the deletion
+                var okButton = dialogContainer.FindElement(By.CssSelector("button.btn.primaryActionBtn"));
+                okButton.Click();
+            }
+            else
+            {
+                // Click the "Cancel" button to cancel the deletion
+                var cancelButton = dialogContainer.FindElement(By.CssSelector("button.btn.secondaryActionBtn"));
+                cancelButton.Click();
+            }
+        }
+
     }
 }

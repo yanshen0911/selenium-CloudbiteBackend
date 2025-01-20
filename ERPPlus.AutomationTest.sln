@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeleniumTests", "SeleniumTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{8FF2CF8A-AEB0-4BC9-8AF9-9FA1CBAF53B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NugetServer", "NugetServer\NugetServer.csproj", "{D7B3E5B0-2358-45D0-A4A4-A317673BEC9B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{8FF2CF8A-AEB0-4BC9-8AF9-9FA1CBAF53B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FF2CF8A-AEB0-4BC9-8AF9-9FA1CBAF53B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FF2CF8A-AEB0-4BC9-8AF9-9FA1CBAF53B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7B3E5B0-2358-45D0-A4A4-A317673BEC9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7B3E5B0-2358-45D0-A4A4-A317673BEC9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7B3E5B0-2358-45D0-A4A4-A317673BEC9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7B3E5B0-2358-45D0-A4A4-A317673BEC9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

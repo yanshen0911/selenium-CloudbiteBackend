@@ -167,6 +167,43 @@ namespace QASErpPlusAutomation.Tests.Store
             Assert.IsTrue(_driver.PageSource.Contains(searchText));
         }
 
+        [Test]
+        [AllureSeverity(SeverityLevel.normal)]
+        [AllureStory("Delete Store Country")]
+        [TestCase("MYY")]
+        [TestCase("MY2")]
+        [TestCase("MY3")]
+        [TestCase("MY3")]
+        public void TestDeleteStoreCountry(string code)
+        {
+            // Step 1: Search for the record in the table
+            helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
+            _storeCountryPage.SearchStoreCountry(code);
+            helperFunction.WaitForTableToLoad(_wait);
+
+            // Step 2: Click the delete button for the matching code
+            _storeCountryPage.DeleteStoreCountryByCode(code);
+
+            // Step 3: Confirm the deletion in the dialog
+            _storeCountryPage.ConfirmDelete(true);
+
+            // Step 4: Wait for the success alert
+            var alertElement = helperFunction.WaitForElementToBeVisible(_wait, By.CssSelector("div[role='alert']"));
+            helperFunction.TakeScreenshot(_driver, "Store", "Store", "Delete Store Country");
+
+            // Step 5: Verify the success message
+            string alertText = alertElement.Text.ToUpper();
+            Console.WriteLine("Alert Message: " + alertText);
+            Assert.IsTrue(alertText.Contains("SUCCESS"), "The delete operation was not successful.");
+
+            // Step 6: Re-Search for the deleted record to ensure it is removed
+            _storeCountryPage.SearchStoreCountry(code);
+            helperFunction.WaitForTableToLoad(_wait);
+            Assert.IsFalse(_driver.PageSource.Contains(code), "The store country was not deleted successfully.");
+        }
+
+
+
         [TearDown]
         public void TearDown()
         {
