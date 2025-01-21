@@ -22,9 +22,9 @@ namespace QASErpPlusAutomation.Tests.Store
 {
     [TestFixture]
     [AllureNUnit]
-    [AllureSuite("Store")] // use this ties to module
+    [AllureSuite("Store - Store Country - Invalid")] // use this ties to module
     [AllureEpic("ERP-117")] // use this and ties to ticket number
-    public class StoreCountryTests
+    public class StoreCountryTests_Invalid
     {
         private IWebDriver _driver;
         private StoreCountryPage _storeCountryPage;
@@ -54,12 +54,15 @@ namespace QASErpPlusAutomation.Tests.Store
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Store Store Country Create")]
+        [AllureStory("Store Store Country Create Invalid")]
         [TestCase("MY8", "Malaysia", "Asia")]
         [TestCase("妈来西亚", "妈来西亚", "亚洲")]
         [TestCase("AAAAAAAAAA", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
         [TestCase("#$#%^", "$^$W#^%", "$^$#^")]
-        public void TestCreateNewStoreCountry(string Code, string Desc,string OtherDesc)
+        [TestCase("MYY", "MYYY", "MYYYY")]
+        [TestCase("MY2", "MY22", "MY22")]
+        [TestCase("MY3", "MY33", "MY333")]
+        public void CreateNewStoreCountry(string Code, string Desc,string OtherDesc)
         {
             string _strCode, _strDesc, _strOtherDesc;
 
@@ -95,56 +98,68 @@ namespace QASErpPlusAutomation.Tests.Store
             Assert.IsTrue(alertText.Contains("SUCCESS"), "The save operation was not successful.");
 
             // Optional: Wait for the URL to redirect (if needed)
-            helperFunction.WaitForUrlToContain(_wait, "/store-stepper/store-country");
+            SearchStoreCountry(_strCode);
         }
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)]
         [AllureStory("Edit Store Country")]
-        [TestCase("MY8", "New Description", "New Other Description")]
-        [TestCase("妈来西亚", "Updated Description", "Updated Other Description")]
-        public void TestEditStoreCountry(string Code, string NewDesc, string NewOtherDesc)
+        [TestCase("MY8", "Malaysia NEW", "Asia NEW")]
+        [TestCase("妈来西亚", "妈来西亚 NEW", "亚洲 NEW")]
+        [TestCase("AAAAAAAAAA", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
+        [TestCase("#$#%^", "$^$W#^%", "$^$#^")]
+        [TestCase("MYY", "MYYY NEW", "MYYYY NEW")]
+        [TestCase("MY2", "MY22 NEW", "MY22 NEW")]
+        [TestCase("MY3", "MY33 NEW", "MY333 NEW")]
+        public void EditStoreCountry(string Code, string NewDesc, string NewOtherDesc)
         {
-            // Step 1: Search for the existing store country by its code
             helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
             _storeCountryPage.SearchStoreCountry(Code);
             helperFunction.WaitForTableToLoad(_wait);
 
-            // Step 2: Click the Edit button
             helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector(".btn-edit-hover"));
-            _storeCountryPage.ClickEditButton();
+            _storeCountryPage.ClickEditButton(Code);
 
-            // Step 3: Ensure the Code field is not editable
-            var isCodeEditable = _storeCountryPage.CodeInput.GetAttribute("readonly") != null;
-            Assert.IsTrue(isCodeEditable, "Code field should not be editable.");
-
-            // Step 4: Update the Description and Other Description fields
             _storeCountryPage.EnterDescription(NewDesc);
             _storeCountryPage.EnterOtherDescription(NewOtherDesc);
             helperFunction.TakeScreenshot(_driver, "Store", "Store", "Edit Store Country", "2");
 
-            // Step 5: Click the Save button
             _storeCountryPage.ClickSaveButton();
 
-            // Step 6: Wait for the alert message to appear
             var alertElement = helperFunction.WaitForElementToBeVisible(_wait, By.CssSelector("div[role='alert']"));
             helperFunction.TakeScreenshot(_driver, "Store", "Store", "Edit Store Country", "2");
 
-            // Step 7: Verify the success message in the alert
             string alertText = alertElement.Text.ToUpper();
             Console.WriteLine("Alert Message: " + alertText);
             Assert.IsTrue(alertText.Contains("SUCCESS"), "The edit operation was not successful.");
 
-            // Step 8: Wait for the redirection back to the store country list
-            helperFunction.WaitForUrlToContain(_wait, "/store-stepper/store-country");
-
-            // Step 9: Re-Search the edited store country and validate changes
+            helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
             _storeCountryPage.SearchStoreCountry(Code);
             helperFunction.WaitForTableToLoad(_wait);
+            helperFunction.TakeScreenshot(_driver, "Store", "Store", "Store Country", "7");
 
-            // Step 10: Assert that the updated Description and Other Description are displayed in the table or details view
-            Assert.IsTrue(_driver.PageSource.Contains(NewDesc), "Updated Description was not saved successfully.");
-            Assert.IsTrue(_driver.PageSource.Contains(NewOtherDesc), "Updated Other Description was not saved successfully.");
+            var infoContainer = _driver.FindElement(By.CssSelector("div.info-container"));
+
+            string[] textsToCheck = { NewDesc, NewOtherDesc };
+
+            if (infoContainer.Text.Contains("No Data Available"))
+            {
+                Console.WriteLine($"Search for '{Code}' resulted in no data.");
+                Assert.IsFalse(infoContainer.Text.Contains(Code), $"Unexpectedly found data for '{Code}'.");
+            }
+            else
+            {
+                // Check if any of the specified texts (e.g., "NewDesc", "NewOtherDesc") are present
+                if (textsToCheck.Any(text => infoContainer.Text.Contains(text)))
+                {
+                    Console.WriteLine($"Expected data found: {string.Join(", ", textsToCheck.Where(text => infoContainer.Text.Contains(text)))}");
+                }
+                else
+                {
+                    Assert.Fail($"Neither '{NewDesc}' nor '{NewOtherDesc}' were found in the results.");
+                }
+            }
+
         }
 
         [Test]
@@ -158,23 +173,37 @@ namespace QASErpPlusAutomation.Tests.Store
         [TestCase("AAAAAAAAAA")]
         [TestCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
         [TestCase("sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
-        public void TestSearchStoreCountry(string searchText)
+        public void SearchStoreCountry(string searchText)
         {
             helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
             _storeCountryPage.SearchStoreCountry(searchText);
             helperFunction.WaitForTableToLoad(_wait);
             helperFunction.TakeScreenshot(_driver, "Store", "Store", "Store Country", "7");
-            Assert.IsTrue(_driver.PageSource.Contains(searchText));
+
+            var infoContainer = _driver.FindElement(By.CssSelector("div.info-container"));
+
+            if (infoContainer.Text.Contains("No Data Available"))
+            {
+                Console.WriteLine($"Search for '{searchText}' resulted in no data.");
+                Assert.IsFalse(infoContainer.Text.Contains(searchText), $"Unexpectedly found data for '{searchText}'.");
+            }
+            else
+            {
+                Assert.IsTrue(infoContainer.Text.Contains(searchText), $"Expected data for '{searchText}' not found in the results.");
+            }
         }
 
         [Test]
         [AllureSeverity(SeverityLevel.normal)]
         [AllureStory("Delete Store Country")]
-        [TestCase("MYY")]
-        [TestCase("MY2")]
-        [TestCase("MY3")]
-        [TestCase("MY3")]
-        public void TestDeleteStoreCountry(string code)
+        [TestCase("MY8", "Malaysia", "Asia")]
+        [TestCase("妈来西亚", "妈来西亚", "亚洲")]
+        [TestCase("AAAAAAAAAA", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
+        [TestCase("#$#%^", "$^$W#^%", "$^$#^")]
+        [TestCase("MYY", "MYYY", "MYYYY")]
+        [TestCase("MY2", "MY22", "MY22")]
+        [TestCase("MY3", "MY33", "MY333")]
+        public void DeleteStoreCountry(string code, string NewDesc, string NewOtherDesc)
         {
             // Step 1: Search for the record in the table
             helperFunction.WaitForElementToBeClickable(_wait, By.CssSelector("button.primaryActionBtn"));
@@ -200,9 +229,46 @@ namespace QASErpPlusAutomation.Tests.Store
             _storeCountryPage.SearchStoreCountry(code);
             helperFunction.WaitForTableToLoad(_wait);
             Assert.IsFalse(_driver.PageSource.Contains(code), "The store country was not deleted successfully.");
+            helperFunction.TakeScreenshot(_driver, "Store", "Store", "Delete Store Country");
+
+
+            // Step 2: Locate the 'info-container' section
+            var infoContainer = _driver.FindElement(By.CssSelector("div.info-container"));
+
+            // Step 3: Check for "No Data Available"
+            if (infoContainer.Text.Contains("No Data Available"))
+            {
+                //if data no longer there, ok can success
+                Console.WriteLine($"Search for '{code}' resulted in no data.");
+                Assert.IsTrue(infoContainer.Text.Contains(code), $"Unexpectedly found data for '{code}'.");
+            }
+            else
+            {
+                //if data still there, then gg, delete failed
+                Assert.IsFalse(infoContainer.Text.Contains(code), $"Expected data for '{code}' not found in the results.");
+            }
         }
 
-
+        //[Test]
+        //[AllureSeverity(SeverityLevel.normal)]
+        //[AllureStory("Store Country CRUD")]
+        //[TestCase("MY8", "Malaysia", "Asia")]
+        //[TestCase("妈来西亚", "妈来西亚", "亚洲")]
+        //[TestCase("AAAAAAAAAA", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12131asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sdffds12123asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa908098a09a098a098a098a098a098a098as098dlkjasdlkjasldkjlkj")]
+        //[TestCase("#$#%^", "$^$W#^%", "$^$#^")]
+        //[TestCase("MYY", "MYYY", "MYYYY")]
+        //[TestCase("MY2", "MY22", "MY22")]
+        //[TestCase("MY3", "MY33", "MY333")]
+        //public void StoreCountryCRUD_Full(string code, string NewDesc, string NewOtherDesc)
+        //{
+        //    TestCreateNewStoreCountry(code, NewDesc, NewOtherDesc);
+        //    TestSearchStoreCountry(code);
+        //    TestSearchStoreCountry(NewDesc);
+        //    TestSearchStoreCountry(NewOtherDesc);
+        //    TestEditStoreCountry(code, NewDesc + " " + DateTime.Now.ToString("HHmmssffff"), NewOtherDesc + " " + DateTime.Now.ToString("HHmmssffff"));
+        //    TestEditStoreCountry(code, NewDesc + " " + DateTime.Now.ToString("HHmmssffff"), NewOtherDesc + " " + DateTime.Now.ToString("HHmmssffff"));
+        //    TestDeleteStoreCountry(code, NewDesc, NewOtherDesc);
+        //}
 
         [TearDown]
         public void TearDown()

@@ -79,15 +79,20 @@ namespace SeleniumTests.Pages.Store
             newButton.Click();
         }
 
-        public void ClickEditButton()
+        public void ClickEditButton(string code)
         {
-            EditButton.Click();
+            // Locate the row by its code
+            string xpath = $"//tr[normalize-space(td)='{code}']//button[contains(@class, 'btn-edit-hover')]";
+            var deleteButton = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
+
+            // Click the delete button
+            deleteButton.Click();
         }
 
         public void DeleteStoreCountryByCode(string code)
         {
             // Locate the row by its code
-            string xpath = $"//tr[td[text()='{code}']]//button[contains(@class, 'btn-delete-hover')]";
+            string xpath = $"//tr[normalize-space(td)='{code}']//button[contains(@class, 'btn-delete-hover')]";
             var deleteButton = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
 
             // Click the delete button
