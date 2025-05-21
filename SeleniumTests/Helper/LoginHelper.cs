@@ -12,6 +12,7 @@ namespace SeleniumTests.Helpers
         private WebDriverWait _wait;
         private LoginPage _loginPage;
 
+        private string _welcomeScreenPath = "/welcome";
         public LoginHelper(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;
@@ -35,13 +36,13 @@ namespace SeleniumTests.Helpers
             _loginPage.ClickLoginButton();
 
             // Wait for the dashboard URL to confirm successful login
-            _wait.Until(ExpectedConditions.UrlContains("/dashboard"));
+            _wait.Until(ExpectedConditions.UrlContains(_welcomeScreenPath));
         }
 
 
         public bool IsLoggedIn()
         {
-            return _driver.Url.Contains("/dashboard");
+            return _driver.Url.Contains(_welcomeScreenPath);
         }
 
         public IList<string> GetValidationMessages()
