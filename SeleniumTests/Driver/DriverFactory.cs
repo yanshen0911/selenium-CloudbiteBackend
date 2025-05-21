@@ -15,7 +15,7 @@ namespace ERPPlus.SeleniumTests.Drivers
             // you need to map it with your current chrome version, and need to change from time to time
             
             string _ChromeBrowserPath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
-            string _ChromeDriverPath = @"C:\Program Files\Google\Chrome\Application\131.0.6778.265\chromedriver-win64";
+            string _ChromeDriverPath = @"D:\114.0.5735.90\chromedriver_win32";
 
             options.BinaryLocation = _ChromeBrowserPath; 
             IWebDriver driver = new ChromeDriver(_ChromeDriverPath, options);
