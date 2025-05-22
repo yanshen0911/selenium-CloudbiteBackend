@@ -45,7 +45,7 @@ namespace ERPPlus.SeleniumTests.Pages
         public bool IsLoginSuccessful()
         {
             // Add logic to verify login, such as checking if a specific element is visible after login
-            return driver.Url.Contains("/dashboard");
+            return driver.Url.Contains("/welcome");
         }
 
         [FindsBy(How = How.CssSelector, Using = ".imgBtn.select-server-btn")]

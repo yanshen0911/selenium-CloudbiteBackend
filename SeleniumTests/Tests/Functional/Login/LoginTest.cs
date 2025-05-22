@@ -47,10 +47,10 @@ namespace SeleniumTests.Tests.Functional.Login
         [Test]
         [AllureSeverity(SeverityLevel.critical)]  // Mark this test as critical
         [AllureStory("Login Login 1")]  // combo with field in excel, Module|Feature Test|Case
-        [TestCase("QAS", "5162", true)]  // test data
-        public void TestValidLogin(string username, string password, bool isValidLogin)
+        [TestCase("QASQA", "5162", "QA - FireBird 2.5 - MALAYSIA", true)]  // test data
+        public void TestValidLogin(string username, string password, string serverName, bool isValidLogin)
         {
-            loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
+            loginHelper.SelectServer(serverName);
             // Perform login using the helper
             loginHelper.PerformLogin(username, password, false);
 
@@ -70,13 +70,13 @@ namespace SeleniumTests.Tests.Functional.Login
         [Test]
         [AllureSeverity(SeverityLevel.normal)]  // Mark this test as normal
         [AllureStory("Login Login 2")] // combo with field in excel, Module|Feature Test|Case
-        [TestCase("admin", "wrongPassword")] // test data
-        public void TestInvalidLogin(string username, string password)
+        [TestCase("QASQA", "wrongPassword", "QA - FireBird 2.5 - MALAYSIA")] // test data
+        public void TestInvalidLogin(string username, string password, string serverName)
         {
             driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
-            loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
+            loginHelper.SelectServer(serverName);
             loginPage.EnterUsername(username);
             loginPage.EnterPassword(password);
             loginPage.ClickLoginButton();
@@ -146,13 +146,13 @@ namespace SeleniumTests.Tests.Functional.Login
         [Test]
         [AllureSeverity(SeverityLevel.normal)] // Mark this test as normal
         [AllureStory("Login Login 4")] // combo with field in excel, Module|Feature Test|Case
-        [TestCase("105 OR 1=1", "105 OR 1=1")]  // Empty username and empty password
-        public void TestLoginWithSQLInjection(string username, string password)
+        [TestCase("105 OR 1=1", "105 OR 1=1", "QA - FireBird 2.5 - MALAYSIA")]  // Empty username and empty password
+        public void TestLoginWithSQLInjection(string username, string password, string serverName)
         {
             driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")));
-            loginHelper.SelectServer("R&D SERVER 01 华语 - MALAYSIA");
+            loginHelper.SelectServer(serverName);
             loginPage.EnterUsername(username);
             loginPage.EnterPassword(password);
             loginPage.ClickLoginButton();
