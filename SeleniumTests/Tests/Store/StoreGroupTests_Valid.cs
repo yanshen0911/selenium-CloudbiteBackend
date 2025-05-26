@@ -27,26 +27,27 @@ namespace QASErpPlusAutomation.Tests.Store
         private SeleniumTests.Pages.Dashboard dashboardPage;
 
 
-        [SetUp]
-        [AllureBefore("Starting Browser and Logging In")] // Describes the setup as part of the report
-        public void SetUp()
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
             _driver = DriverFactory.CreateDriver();
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(3));
-
             _driver.Manage().Window.Maximize();
             _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
+
             _loginHelper = new LoginHelper(_driver, _wait);
-            Thread.Sleep(1500);
             _loginHelper.SelectServer(AppConfig.ServerName);
             _loginHelper.PerformLogin(AppConfig.UserName, AppConfig.Password, false);
 
             helperFunction.WaitForPageToLoad(_wait);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
             _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/store-stepper/store-group-v2");
             helperFunction.WaitForPageToLoad(_wait);
-
             _StoreGroupPage = new StoreGroupPage(_driver);
-            dashboardPage = new SeleniumTests.Pages.Dashboard(_driver);
         }
 
         [Test]
@@ -1088,19 +1089,10 @@ namespace QASErpPlusAutomation.Tests.Store
 
 
 
-        [TearDown]
-        public void TearDown()
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
         {
-            // Perform logout
-            dashboardPage.Logout();
-            
-            // Validate logout by checking the login page URL
-            _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("/login"));
-
-            if (_driver != null)
-            {
-                _driver.Quit();
-            }
+            _driver.Quit();
         }
     }
 }
