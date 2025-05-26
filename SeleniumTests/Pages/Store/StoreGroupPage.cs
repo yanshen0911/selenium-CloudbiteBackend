@@ -89,6 +89,13 @@ namespace SeleniumTests.Pages.Store
             deleteButton.Click();
         }
 
+        public void ClickFilterButton()
+        {
+            var filterButton = _wait.Until(ExpectedConditions.ElementToBeClickable(FilterButton));
+            filterButton.Click();
+        }
+       
+
         public void DeleteStoreCountryByCode(string code)
         {
             // Locate the row by its code
@@ -102,11 +109,13 @@ namespace SeleniumTests.Pages.Store
 
         public void ClickUploadButton()
         {
+            var newButton = _wait.Until(ExpectedConditions.ElementToBeClickable(UploadButton));
             UploadButton.Click();
         }
 
         public void ClickDownloadButton()
         {
+            var newButton = _wait.Until(ExpectedConditions.ElementToBeClickable(DownloadButton));
             DownloadButton.Click();
         }
 
@@ -114,6 +123,7 @@ namespace SeleniumTests.Pages.Store
         {
             if (NextPageButton.Enabled)
             {
+                var newButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NextPageButton));
                 NextPageButton.Click();
             }
         }
@@ -130,6 +140,7 @@ namespace SeleniumTests.Pages.Store
         {
             PrintButton.Click();
         }
+
 
         // New Methods for Form Fields
         public void EnterCode(string code)
