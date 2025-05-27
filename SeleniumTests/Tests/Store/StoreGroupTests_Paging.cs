@@ -34,13 +34,11 @@ namespace QASErpPlusAutomation.Tests.Store
         private LoginHelper _loginHelper;
         private SeleniumTests.Pages.Dashboard dashboardPage;
 
-        [SetUp]
-        [AllureBefore("Starting Browser and Logging In")] // Describes the setup as part of the report
-        public void SetUp()
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
             _driver = DriverFactory.CreateDriver();
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(3));
-
             _driver.Manage().Window.Maximize();
             _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
@@ -49,9 +47,13 @@ namespace QASErpPlusAutomation.Tests.Store
             _loginHelper.PerformLogin(AppConfig.UserName, AppConfig.Password, false);
 
             helperFunction.WaitForPageToLoad(_wait);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
             _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/store-stepper/store-group-v2");
             helperFunction.WaitForPageToLoad(_wait);
-
             _StoreGroupPage = new StoreGroupPage(_driver);
         }
 
@@ -289,13 +291,10 @@ namespace QASErpPlusAutomation.Tests.Store
 
 
 
-        [TearDown]
-        public void TearDown()
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
         {
-            if (_driver != null)
-            {
-                _driver.Quit();
-            }
+            _driver.Quit();
         }
     }
 }

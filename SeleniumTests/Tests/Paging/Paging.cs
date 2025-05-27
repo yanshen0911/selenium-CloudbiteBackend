@@ -66,14 +66,14 @@ namespace QASErpPlusAutomation.Tests.Store
         {
             // Step 0: Wait for table to be visible
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]")));
 
             // Step 1: Capture current table HTML content
             string beforeHtml = tableElement.GetAttribute("innerHTML");
 
             // Step 2: Click the "Next" button
             var nextButton = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[3]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[3]")));
             nextButton.Click();
             Console.WriteLine("✅ 'Next' button clicked.");
 
@@ -82,7 +82,7 @@ namespace QASErpPlusAutomation.Tests.Store
             // Step 3: Wait for table content to change
             _wait.Until(driver =>
             {
-                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]"));
+                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]"));
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
             });
 
@@ -102,14 +102,14 @@ namespace QASErpPlusAutomation.Tests.Store
         {
             // Step 0: Wait for table to be visible
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]")));
 
             // Step 1: Capture current table HTML content
             string beforeHtml = tableElement.GetAttribute("innerHTML");
 
             // Step 2: Click the "Next" button
             var nextButton = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[3]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[3]")));
             nextButton.Click();
             Console.WriteLine("✅ 'Next' button clicked.");
 
@@ -117,7 +117,7 @@ namespace QASErpPlusAutomation.Tests.Store
 
             // Step 2: Click the "Next" button
             var previousButton = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[2]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[2]")));
             previousButton.Click();
             Console.WriteLine("✅ 'Previous' button clicked.");
 
@@ -126,7 +126,7 @@ namespace QASErpPlusAutomation.Tests.Store
             // Step 3: Wait for table content to change
             _wait.Until(driver =>
             {
-                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]"));
+                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]"));
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
             });
 
@@ -146,14 +146,14 @@ namespace QASErpPlusAutomation.Tests.Store
         {
             // Step 0: Wait for table to be visible
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]")));
 
             // Step 1: Capture current table HTML content
             string beforeHtml = tableElement.GetAttribute("innerHTML");
 
             // Step 2: Click the "Last" button
             var lastButton = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[4]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[4]")));
             lastButton.Click();
             Console.WriteLine("✅ 'Last' button clicked.");
 
@@ -162,7 +162,7 @@ namespace QASErpPlusAutomation.Tests.Store
             // Step 3: Wait for table content to change
             _wait.Until(driver =>
             {
-                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]"));
+                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]"));
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
             });
 
@@ -181,21 +181,21 @@ namespace QASErpPlusAutomation.Tests.Store
         {
             // Step 0: Wait for table to be visible
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]")));
 
             // Step 1: Capture current table HTML content
             string beforeHtml = tableElement.GetAttribute("innerHTML");
 
             // Step 2: Click the "Last" button
             var lastButton = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[4]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[4]")));
             lastButton.Click();
             Console.WriteLine("✅ 'Last' button clicked.");
 
             Thread.Sleep(3000);
 
             var firstButton = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[1]")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[3]/button[1]")));
             firstButton.Click();
             Console.WriteLine("✅ 'First' button clicked.");
 
@@ -204,7 +204,7 @@ namespace QASErpPlusAutomation.Tests.Store
             // Step 3: Wait for table content to change
             _wait.Until(driver =>
             {
-                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[1]"));
+                var updatedTable = driver.FindElement(By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[1]"));
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
             });
 
@@ -225,12 +225,12 @@ namespace QASErpPlusAutomation.Tests.Store
         {
             // Step 0: Wait for the table to be visible and capture its original HTML
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("//app-store-region-v2/div[2]/div[1]")));
+                By.XPath("//app-store-group-v2/div[2]/div[1]")));
             string beforeHtml = tableElement.GetAttribute("innerHTML");
 
             // Step 1: Locate the <select> dropdown
             var dropdownElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-region-v2/div[2]/div[2]/app-custom-paginator/div/div[2]/select")));
+                By.XPath("/html/body/app-root/body/app-main-layout/app-header/div/mat-sidenav-container/mat-sidenav-content/div/div/app-store-group-v2/div[2]/div[2]/app-custom-paginator/div/div[2]/select")));
 
             // Step 2: Use Selenium's SelectElement to change the value
             var select = new SelectElement(dropdownElement);
@@ -241,7 +241,7 @@ namespace QASErpPlusAutomation.Tests.Store
             // Step 3: Wait for the table to update (HTML should change)
             _wait.Until(driver =>
             {
-                var updatedTable = driver.FindElement(By.XPath("//app-store-region-v2/div[2]/div[1]"));
+                var updatedTable = driver.FindElement(By.XPath("//app-store-group-v2/div[2]/div[1]"));
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
             });
 
@@ -264,7 +264,7 @@ namespace QASErpPlusAutomation.Tests.Store
 
             // Step 0: Wait for the table to be visible and capture its original HTML
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(
-                By.XPath("//app-store-region-v2/div[2]/div[1]")));
+                By.XPath("//app-store-group-v2/div[2]/div[1]")));
             string beforeHtml = tableElement.GetAttribute("innerHTML");
 
             // Step 1: Find the input field and enter a new page number
@@ -278,7 +278,7 @@ namespace QASErpPlusAutomation.Tests.Store
             // Step 2: Wait for the table to update
             _wait.Until(driver =>
             {
-                var updatedTable = driver.FindElement(By.XPath("//app-store-region-v2/div[2]/div[1]"));
+                var updatedTable = driver.FindElement(By.XPath("//app-store-group-v2/div[2]/div[1]"));
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
             });
 
