@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 using SeleniumExtras.WaitHelpers;
@@ -8,21 +9,24 @@ namespace ERPPlus.SeleniumTests.Pages
     public class LoginPage
     {
         private readonly IWebDriver driver;
+        private readonly IWebDriver _driver;
+        private readonly WebDriverWait _wait;
 
-        [FindsBy(How = How.Id, Using = "userID")]
+        [FindsBy(How = How.CssSelector, Using = "input[formcontrolname='email']")]
         private IWebElement UsernameField;
 
-        [FindsBy(How = How.Id, Using = "password")]
+        [FindsBy(How = How.CssSelector, Using = "input[formcontrolname='password']")]
         private IWebElement PasswordField;
 
 
-        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-login/mat-drawer-container/mat-drawer-content/div/div[1]/div[2]/form/div[4]/button")]
+        [FindsBy(How = How.Id, Using = "kt_sign_in_submit")]
         private IWebElement LoginButton;
 
-        public LoginPage(IWebDriver driver)
+        public LoginPage(IWebDriver driver, WebDriverWait wait)
         {
-            this.driver = driver;
-            PageFactory.InitElements(driver, this);
+            _driver = driver;
+            _wait = wait;
+            PageFactory.InitElements(_driver, this);
         }
 
         public void EnterUsername(string username)
@@ -45,7 +49,7 @@ namespace ERPPlus.SeleniumTests.Pages
         public bool IsLoginSuccessful()
         {
             // Add logic to verify login, such as checking if a specific element is visible after login
-            return driver.Url.Contains("/welcome");
+            return driver.Url.Contains("/dashboard");
         }
 
         [FindsBy(How = How.CssSelector, Using = ".imgBtn.select-server-btn")]

@@ -3,7 +3,7 @@ using OpenQA.Selenium.Chrome;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 
-namespace ERPPlus.SeleniumTests.Drivers
+namespace EInvoice.SeleniumTests.Drivers
 {
     public static class DriverFactory
     {

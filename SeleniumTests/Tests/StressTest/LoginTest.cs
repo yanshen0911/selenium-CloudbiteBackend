@@ -1,7 +1,7 @@
 ﻿using Allure.Net.Commons;
 using Allure.NUnit.Attributes;
-using ERPPlus.SeleniumTests.Config;
-using ERPPlus.SeleniumTests.Drivers;
+using EInvoice.SeleniumTests.Config;
+using EInvoice.SeleniumTests.Drivers;
 using NUnit.Allure.Core;
 using NUnit.Framework;
 using OpenQA.Selenium;

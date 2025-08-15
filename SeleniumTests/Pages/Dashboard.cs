@@ -24,10 +24,10 @@ namespace SeleniumTests.Pages
         private IWebElement WelcomeMessageDiv;
 
 
-        [FindsBy(How = How.XPath, Using = "/html/body/app-root/body/app-main-layout/app-header/div/mat-toolbar/div[8]")]
+        [FindsBy(How = How.XPath, Using = "/html/body/app-layout/div/div/div/app-header/div/app-topbar/div/span")]
         private IWebElement UserProfileDropDown;
 
-        [FindsBy(How = How.XPath, Using = "//*[@id=\"mat-menu-panel-0\"]/div/button/span/div")]
+        [FindsBy(How = How.XPath, Using = "/html/body/app-user-inner/div[5]/a")]
         private IWebElement LogOutButton;
 
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection.Metadata;
 
 namespace SeleniumTests.Helper
 {
@@ -29,6 +30,36 @@ namespace SeleniumTests.Helper
         public static void WaitForTableToLoad(WebDriverWait wait)
         {
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".mat-mdc-table")));
+        }
+
+        public static void WaitForBETableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-business-entity/div/div[4]/div/div[1]/div/table/tbody/tr")));
+
+        }
+
+        public static void WaitForSTRTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]/div/table/tbody/tr")));
+
+        }
+
+        public static void WaitForCustTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-customer/div/div[4]/div/div[1]/div/table/tbody/tr")));
+
+        }
+
+        public static void WaitForLogTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]/div/table/tbody/tr")));
+
+        }
+
+        public static void WaitForUserTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-user/form/div/app-user-table/div/div/div[3]/div/div[1]/div/table/tbody/tr")));
+
         }
 
         public static void WaitForElementToBeClickable(WebDriverWait wait, By locator)

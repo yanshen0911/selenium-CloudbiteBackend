@@ -1,46 +1,52 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-	
-	<IsPackable>false</IsPackable>
-    <TestLogger>console;verbosity=normal</TestLogger>
-    <TestResultsDirectory>$(OutputPath)\TestResults</TestResultsDirectory>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
 
-  <ItemGroup>
-    <PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
-    <PackageReference Include="Allure.NUnit" Version="2.12.1" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
-    <PackageReference Include="DotNetSeleniumExtras.PageObjects.Core" Version="4.14.1" />
-    <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-    <PackageReference Include="NUnit" Version="4.2.2" />
-    <PackageReference Include="NUnit.Console" Version="3.18.1" />
-    <PackageReference Include="NUnit.ConsoleRunner" Version="3.18.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Selenium.Support" Version="4.24.0" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.24.0" />
-    <PackageReference Include="SeleniumExtras.WaitHelpers" Version="1.0.2" />
-    <PackageReference Include="WebDriverManager" Version="2.17.5" />
-  </ItemGroup>
+		<IsPackable>false</IsPackable>
+		<TestLogger>console;verbosity=normal</TestLogger>
+		<TestResultsDirectory>$(OutputPath)\TestResults</TestResultsDirectory>
+		<Configurations>Debug;Release;x64</Configurations>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
+		<PackageReference Include="Allure.NUnit" Version="2.12.1" />
+		<PackageReference Include="coverlet.collector" Version="6.0.0" />
+		<PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
+		<PackageReference Include="DotNetSeleniumExtras.PageObjects.Core" Version="4.14.1" />
+		<PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
+		<PackageReference Include="EPPlus" Version="5.8.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+		<PackageReference Include="NUnit" Version="4.2.2" />
+		<PackageReference Include="NUnit.Console" Version="3.18.1" />
+		<PackageReference Include="NUnit.ConsoleRunner" Version="3.18.1" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+		<PackageReference Include="ScreenRecorderLib" Version="1.2.3" />
+		<PackageReference Include="Selenium.Support" Version="4.24.0" />
+		<PackageReference Include="Selenium.WebDriver" Version="4.34.0" />
+		<PackageReference Include="SeleniumExtras.WaitHelpers" Version="1.0.2" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.7" />
+		<PackageReference Include="System.Windows.Extensions" Version="9.0.7" />
+		<PackageReference Include="WebDriverManager" Version="2.17.5" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update=".runsettings">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update=".runsettings">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using SeleniumExtras.WaitHelpers;
 using OpenQA.Selenium.Support.UI;
 using SeleniumTests.Pages;
-using SeleniumTests.Pages.Store;
+using SeleniumTests.Pages.Stores;
 
 namespace SeleniumTests.Helpers
 {
