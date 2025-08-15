@@ -140,7 +140,7 @@ namespace SeleniumTests.Tests.BusinessEntity
         [Order(1)]
         [AllureSeverity(SeverityLevel.normal)]
         [AllureStory("Create")]
-        [TestCase("QUBE APPS MARKETING SDN. BHD.", "C23768804020", "BRN", "201201026867", "SST1", "TT1", "00000 | NOT APPLICABLE", "01234567890", "yanshen.choo@qubeapps.com", "Petaling Jaya",
+        [TestCase("Qube Apps Sdn Bhd", "C21941625070", "BRN", "201201008022", "SST1", "TT1", "00000 | NOT APPLICABLE", "01234567890", "yanshen.choo@qubeapps.com", "Petaling Jaya",
         "Selangor", "12345", "MALAYSIA", "No 111, Jalan 222", "Lorong 333, Taman 444", "Perindustrian 555")]
         public void Create(string BEname, string BETinNumber, string BEregisterType, string BERegisterID, string BEsst, string BETTRegisterNumber, string BEMSIC, string BEContactNumber,
         string BEemail, string BECity, string BEState, string BEPosCode, string BECountry, string BEAddress1, string BEAddress2, string BEAddress3)
