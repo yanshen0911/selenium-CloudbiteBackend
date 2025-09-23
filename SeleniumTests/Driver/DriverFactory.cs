@@ -3,7 +3,7 @@ using OpenQA.Selenium.Chrome;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 
-namespace EInvoice.SeleniumTests.Drivers
+namespace CloudbiteBackend.SeleniumTests.Drivers
 {
     public static class DriverFactory
     {

@@ -1,8 +1,8 @@
 ﻿using Allure.Net.Commons;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
-using EInvoice.SeleniumTests.Config;
-using EInvoice.SeleniumTests.Drivers;
+using CloudbiteBackend.SeleniumTests.Config;
+using CloudbiteBackend.SeleniumTests.Drivers;
 using ERPPlus.SeleniumTests.Pages;
 using NUnit.Framework;
 using OfficeOpenXml;
@@ -14,6 +14,7 @@ using SeleniumExtras.WaitHelpers;
 using SeleniumTests.Helper;
 using SeleniumTests.Pages;
 using SeleniumTests.Pages.Stores;
+using SeleniumTests.Tests.Stores;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
@@ -22,6 +23,37 @@ using helperFunction = SeleniumTests.Helper.HelperFunction;
 
 namespace SeleniumTests.Tests.Functional.Login
 {
+
+    public static class ExcelDataReaderLogoutValid
+    {
+        public static IEnumerable<object[]> GetValidLogoutTestData(string filePath, string sheetName)
+        {
+            var fileInfo = new FileInfo(filePath);
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using (var package = new ExcelPackage(fileInfo))
+            {
+                var worksheet = package.Workbook.Worksheets[sheetName];
+                if (worksheet == null || worksheet.Dimension == null)
+                    throw new Exception($"❌ Sheet '{sheetName}' is empty or missing in {filePath}");
+
+                int rowCount = worksheet.Dimension.Rows;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    string isValidLogin = worksheet.Cells[row, 1].Text?.Trim();
+
+                    yield return new object[]
+                    {
+                        isValidLogin
+                    };
+
+                }
+            }
+        }
+
+    }
+        
     [TestFixture]
     [AllureNUnit]  // Enable Allure reporting
     [AllureSuite("Logout")] // use this ties to module
@@ -36,6 +68,13 @@ namespace SeleniumTests.Tests.Functional.Login
         private ManualResetEvent _recordingCompletedEvent = new ManualResetEvent(false);
         private List<string> _logMessages = new List<string>();
         private string _moduleName = "";
+
+
+        private static string ExcelPath = Path.Combine(AppConfig.TestDataFolder, "LogoutTestDataValid.xlsx");
+
+        public static IEnumerable<object[]> ValidLogoutTestData =>
+        ExcelDataReaderLogoutValid.GetValidLogoutTestData(ExcelPath, "ValidLogoutTestData");
+
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -133,9 +172,9 @@ namespace SeleniumTests.Tests.Functional.Login
 
         [Test]
         [AllureSeverity(SeverityLevel.critical)]
-        [AllureStory("Login Login 1")]
-        [TestCase(true)]
-        public void TestValidLogout(bool isValidLogin)
+        [AllureStory("Logout 1")]
+        [TestCaseSource(nameof(ValidLogoutTestData))]
+        public void TestValidLogout(string isValidLogin)
         {
 
             string username = AppConfig.UserName;
@@ -151,7 +190,7 @@ namespace SeleniumTests.Tests.Functional.Login
             LogStep("Clicking login button");
             _loginPage.ClickLoginButton();
 
-            if (isValidLogin)
+            if (isValidLogin == "1")
             {
                 LogStep("Waiting for dashboard URL to confirm successful login");
                 wait.Until(ExpectedConditions.UrlContains("dashboard"));
@@ -198,6 +237,16 @@ namespace SeleniumTests.Tests.Functional.Login
                     Assert.Fail("Logout process failed or did not redirect to login page.");
                 }
             }
+            else if (isValidLogin == "0")
+            {
+                LogStep($"❌ Logout failed");
+                string logoutFailScreenshot = Path.Combine(Path.GetTempPath(), $"Logout_Failure_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                var failShot = ((ITakesScreenshot)driver).GetScreenshot();
+                File.WriteAllBytes(logoutFailScreenshot, failShot.AsByteArray);
+                _lastScreenshotPath = logoutFailScreenshot;
+
+                Assert.Fail("Logout process failed or did not redirect to login page.");
+            }
             else
             {
                 LogStep("Waiting to remain on login page due to invalid login");
@@ -213,6 +262,7 @@ namespace SeleniumTests.Tests.Functional.Login
             }
         }
 
+        
 
 
         [TearDown]

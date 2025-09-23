@@ -1,7 +1,7 @@
 ﻿using Allure.Net.Commons;
 using Allure.NUnit.Attributes;
-using EInvoice.SeleniumTests.Config;
-using EInvoice.SeleniumTests.Drivers;
+using CloudbiteBackend.SeleniumTests.Config;
+using CloudbiteBackend.SeleniumTests.Drivers;
 using NUnit.Allure.Core;
 using NUnit.Framework;
 using OpenQA.Selenium;

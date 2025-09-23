@@ -1,8 +1,8 @@
 ﻿using Allure.Net.Commons;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
-using EInvoice.SeleniumTests.Config;
-using EInvoice.SeleniumTests.Drivers;
+using CloudbiteBackend.SeleniumTests.Config;
+using CloudbiteBackend.SeleniumTests.Drivers;
 using NUnit.Framework;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -14,6 +14,7 @@ using SeleniumTests.Pages.Stores;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
+using System.Net.NetworkInformation;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using helperFunction = SeleniumTests.Helper.HelperFunction;
 
@@ -692,7 +693,7 @@ namespace SeleniumTests.Tests.Stores
                     worksheet.Cells[row, 2].Value = _moduleName;
                     worksheet.Cells[row, 3].Value = testName;
                     worksheet.Cells[row, 4].Value = formattedSteps;
-                    worksheet.Cells[row, 5].Value = expectedResult;
+                    worksheet.Cells[row, 5].Value = "Paging completed successfully. The data has been refreshed and reloaded.";
 
                     // ✅ Format Input Params: Comma → Newline, remove extra spaces, wrap, align
                     string formattedInputParams = string.Join(

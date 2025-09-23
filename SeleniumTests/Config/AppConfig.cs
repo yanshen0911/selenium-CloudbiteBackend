@@ -1,38 +1,26 @@
-﻿using OpenQA.Selenium.DevTools.V136.Runtime;
-
-namespace EInvoice.SeleniumTests.Config
+﻿namespace CloudbiteBackend.SeleniumTests.Config
 {
     public static class AppConfig
     {
         public static string TesterName = "Choo Yan Shen";
-        //Dev Env
-        //public static string BaseUrl => "https://test.einvoice-dev.qubeposcloud-uat.com";
-        //public static string UserName => "test@einvoice.com";
-        //public static string Password => "password";
 
-        //Staging Env diy (All type of log)
-        public static string BaseUrl => "https://diy.einvoice-staging.qubeposcloud-uat.com";
-        public static string UserName => "yanshen.choo@qubeapps.com";
-        public static string Password => "Password123!";
+        //Staging Env
+        public static string BaseUrl => "https://test4.cloudbite-staging.qubeposcloud-uat.com";
+        public static string UserName => "khairilamir.nawi@qubeapps.com";
+        public static string Password => "password";
 
-        //Staging Env qubeappstest1 super admin
-        //public static string BaseUrl => "https://qubeappstest1.einvoice-staging.qubeposcloud-uat.com";
-        //public static string UserName => "support@qubeappstest1.com";
-        //public static string Password => @"]alQa)-$\A";
-
-        //Staging Env qubeappstest1
-        //public static string BaseUrl => "https://qubeappstest1.einvoice-staging.qubeposcloud-uat.com";
-        //public static string UserName => "yanshen.choo@qubeapps.com";
-        //public static string Password => "Password123!";
 
         //Recording File Path
-        public static string BaseVideoFolder => @"C:\Users\ChooYanShen\Desktop\E-Invoice\E-Invoice Testing Video";
+        public static string BaseVideoFolder => @"C:\Users\ChooYanShen\Desktop\Cloudbite_Backend\Cloudbite Backend Testing Video";
 
         //Exported Test Case File Path
-        public static string CsvExportFolder => @"C:\Users\ChooYanShen\Desktop\E-Invoice\TestCase";
+        public static string CsvExportFolder => @"C:\Users\ChooYanShen\Desktop\Cloudbite_Backend\TestCase";
 
         //Test Case Template
         public static string TestCaseFile = @"D:\e-invoice\SeleniumTests\TestCaseTemplate.xlsx";
+
+        //Test Data Template
+        public static string TestDataFolder = @"D:\e-invoice\SeleniumTests\TestDataFolder";
 
         //Downloaded File Path
         public static string DownloadPath = @"C:\Users\ChooYanShen\Downloads";
@@ -54,13 +42,15 @@ namespace EInvoice.SeleniumTests.Config
         public static string BusinessEntityImage = @"D:\e-invoice\SeleniumTests\Image\BusinessEntity.jpg";
 
 
+
+
         // Function to be Add On
         // add action download for import file (Transaction Page)
-        // Log add filter
         // Resubmit Transaction
-        // pending module -> Dashboard, Profile, Transaction, Template Editor, Report
+        // pending module -> Dashboard, Transaction, Template Editor, Report
         // Change clean message to helper
-        // Chnage export to helper
+        // Change export to helper
+        // verify inport data
 
         // Future Enhancement
         // Manual Consolidation

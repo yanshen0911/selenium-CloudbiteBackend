@@ -12,15 +12,23 @@ namespace ERPPlus.SeleniumTests.Pages
         private readonly IWebDriver _driver;
         private readonly WebDriverWait _wait;
 
-        [FindsBy(How = How.CssSelector, Using = "input[formcontrolname='email']")]
+        [FindsBy(How = How.CssSelector, Using = "#homePageEmail")]
         private IWebElement UsernameField;
 
-        [FindsBy(How = How.CssSelector, Using = "input[formcontrolname='password']")]
+        [FindsBy(How = How.CssSelector, Using = "#homePagePassword")]
         private IWebElement PasswordField;
 
+        [FindsBy(How = How.CssSelector, Using = "#kt_login_password_reset_form > div.fv-row.mb-10 > input")]
+        private IWebElement EmailField;
 
-        [FindsBy(How = How.Id, Using = "kt_sign_in_submit")]
+        [FindsBy(How = How.CssSelector, Using = "#loginButton")]
         private IWebElement LoginButton;
+
+        [FindsBy(How = How.XPath, Using = "//app-login//form//a[contains(text(),'Forgot Password')]")]
+        private IWebElement ForgotPassword;
+
+        [FindsBy(How = How.CssSelector, Using = "#kt_password_reset_submit")]
+        private IWebElement SubmitForgotPassword;
 
         public LoginPage(IWebDriver driver, WebDriverWait wait)
         {
@@ -41,10 +49,37 @@ namespace ERPPlus.SeleniumTests.Pages
             PasswordField.SendKeys(password);
         }
 
+        public void EnterEmail(string email)
+        {
+            EmailField.Clear();
+            EmailField.SendKeys(email);
+        }
+
         public void ClickLoginButton()
         {
             LoginButton.Click();
         }
+
+        public void ClickForgotPassword()
+        {
+            ForgotPassword.Click();
+        }
+
+        public void ClickSubmitForgotPassword()
+        {
+            SubmitForgotPassword.Click();
+        }
+
+        public bool IsLoginButtonEnabled()
+        {
+            return LoginButton.Enabled;
+        }
+
+        public bool IsSubmitForgotPasswordEnabled()
+        {
+            return SubmitForgotPassword.Enabled;
+        }
+
 
         public bool IsLoginSuccessful()
         {
@@ -115,7 +150,6 @@ namespace ERPPlus.SeleniumTests.Pages
 
             throw new NoSuchElementException($"Server with text '{serverText}' was not found.");
         }
-
 
 
         [FindsBy(How = How.CssSelector, Using = ".invalid-feedback")]

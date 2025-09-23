@@ -1,7 +1,7 @@
 ﻿using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
 using OpenQA.Selenium.Support.UI;
-using EInvoice.SeleniumTests.Config;
+using CloudbiteBackend.SeleniumTests.Config;
 using ERPPlus.SeleniumTests.Pages;
 
 namespace SeleniumTests.Helpers
@@ -12,7 +12,7 @@ namespace SeleniumTests.Helpers
         private WebDriverWait _wait;
         private LoginPage _loginPage;
 
-        private string _welcomeScreenPath = "/dashboard";
+        private string _welcomeScreenPath = "/management/dashboard/sales-db";
         public LoginHelper(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;

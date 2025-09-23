@@ -62,6 +62,12 @@ namespace SeleniumTests.Helper
 
         }
 
+        public static void WaitForUserRoleTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div[1]/div/div/div/app-content/app-user/form/div/app-user-role-table/div/div[2]/div/div[1]/div/table/tbody/tr")));
+
+        }
+
         public static void WaitForElementToBeClickable(WebDriverWait wait, By locator)
         {
             wait.Until(ExpectedConditions.ElementToBeClickable(locator));

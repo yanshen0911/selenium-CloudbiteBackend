@@ -128,9 +128,9 @@ namespace SeleniumTests.Pages.Stores
                 By.XPath("//input[@type='text' and @placeholder='Search']")));
             searchInput.Clear();
             searchInput.SendKeys(BETinNumber);
-            searchInput.SendKeys(Keys.Enter); // Trigger the AJAX search (if needed)
+            searchInput.SendKeys(Keys.Enter);
 
-            // Wait for the matching row with BETinNumber to appear (dynamic load)
+            // Wait for the row that contains the BETinNumber
             string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(), '{BETinNumber}')]]";
             var row = _wait.Until(driver =>
             {
@@ -138,12 +138,13 @@ namespace SeleniumTests.Pages.Stores
                 return rows.Count == 1 ? rows[0] : null;
             });
 
-            // Inside that row, find the edit icon's <a> in td[13]
-            var editAnchor = row.FindElement(By.XPath("//*[@id=\"kt_content_container\"]/app-store/div/div[3]/div/div[1]/div/table/tbody/tr[1]/td[9]/div"));
+            // Find the pencil icon inside that row (relative XPath)
+            var editIcon = row.FindElement(By.XPath(".//i[contains(@class,'bi-pencil')]"));
 
             // Wait for it to be clickable and click
-            _wait.Until(ExpectedConditions.ElementToBeClickable(editAnchor)).Click();
+            _wait.Until(ExpectedConditions.ElementToBeClickable(editIcon)).Click();
         }
+
 
 
 

@@ -1,8 +1,8 @@
 ﻿using Allure.Net.Commons;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
-using EInvoice.SeleniumTests.Config;
-using EInvoice.SeleniumTests.Drivers;
+using CloudbiteBackend.SeleniumTests.Config;
+using CloudbiteBackend.SeleniumTests.Drivers;
 using ERPPlus.SeleniumTests.Pages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
@@ -13,14 +13,20 @@ using OpenQA.Selenium.Support.UI;
 using ScreenRecorderLib;
 using SeleniumExtras.WaitHelpers;
 using SeleniumTests.Helpers;
+using SeleniumTests.Tests.Stores;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using helperFunction = SeleniumTests.Helper.HelperFunction;
+using System.Drawing;                // For Rectangle
+using System.Windows.Forms;          // For Screen
+using ScreenRecorderLib;
 
 namespace SeleniumTests.Tests.Functional.Login
 {
+
+        
     [TestFixture]
     [AllureNUnit]  
     [AllureSuite("Login")] // use this ties to module
@@ -35,6 +41,7 @@ namespace SeleniumTests.Tests.Functional.Login
         private ManualResetEvent _recordingCompletedEvent = new ManualResetEvent(false);
         private List<string> _logMessages = new List<string>();
         private string _moduleName = "";
+
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -74,14 +81,15 @@ namespace SeleniumTests.Tests.Functional.Login
             driver = DriverFactory.CreateDriver();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
             driver.Manage().Window.Maximize();
-            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/auth/login");
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
         }
+
 
         [SetUp]
         public void SetUp()
         {
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
-            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/dashboard");
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
             helperFunction.WaitForPageToLoad(wait);
 
             _loginPage = new LoginPage(driver, wait);
@@ -130,8 +138,8 @@ namespace SeleniumTests.Tests.Functional.Login
         }
 
 
-
         [Test]
+        [Order(1)]
         [AllureSeverity(SeverityLevel.critical)]
         [AllureStory("Login Login 1")]
         [TestCase(true)]
@@ -141,42 +149,53 @@ namespace SeleniumTests.Tests.Functional.Login
             string password = AppConfig.Password;
 
             LogStep("Navigating to login page");
-            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/auth/login");
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
             LogStep("Entering username and password");
             _loginPage.EnterUsername(username);
-            _loginPage.EnterPassword(password);
+            WaitForUIEffect();
 
+            _loginPage.EnterPassword(password);
+            WaitForUIEffect();
+
+            WaitForUIEffect();
             LogStep("Clicking login button");
             _loginPage.ClickLoginButton();
+            WaitForUIEffect();
 
             if (isValidLogin)
             {
                 LogStep("Waiting for dashboard URL to confirm successful login");
-                wait.Until(ExpectedConditions.UrlContains("dashboard"));
+                wait.Until(ExpectedConditions.UrlContains("/management/dashboard/sales-db"));
 
                 LogStep("✅ Login succeeded. Capturing screenshot.");
+                WaitForUIEffect();
+
                 string screenshotPath = Path.Combine(Path.GetTempPath(), $"Login_Success_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
                 File.WriteAllBytes(screenshotPath, screenshot.AsByteArray);
                 _lastScreenshotPath = screenshotPath;
 
                 // Assert user has reached dashboard
-                Assert.IsTrue(driver.Url.Contains("dashboard"), "Login was expected to succeed, but did not reach dashboard.");
+                Assert.IsTrue(driver.Url.Contains("/management/dashboard/sales-db"), "Login was expected to succeed, but did not reach dashboard.");
+
+
             }
             else
             {
                 LogStep("Waiting to remain on login page due to invalid login");
-                wait.Until(ExpectedConditions.UrlContains("/auth/login"));
+                wait.Until(ExpectedConditions.UrlContains("/login"));
 
                 LogStep("✅ Login failed as expected. Capturing screenshot.");
+                WaitForUIEffect();
+
                 string screenshotPath = Path.Combine(Path.GetTempPath(), $"Login_Failure_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
                 File.WriteAllBytes(screenshotPath, screenshot.AsByteArray);
                 _lastScreenshotPath = screenshotPath;
 
                 // Assert user is still on login page
-                Assert.IsTrue(driver.Url.Contains("/auth/login"), "Login was expected to fail, but URL changed unexpectedly.");
+                Assert.IsTrue(driver.Url.Contains("/login"), "Login was expected to fail, but URL changed unexpectedly.");
             }
         }
 
@@ -384,7 +403,7 @@ namespace SeleniumTests.Tests.Functional.Login
 
                     try
                     {
-                        var footerElement = driver.FindElement(By.XPath("/html/body/app-layout/div/div/div/app-footer/div/div/span[2]"));
+                        var footerElement = driver.FindElement(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-dashboard/div/app-sales-dashboard/div[2]/div/span[2]"));
                         string footerValue = footerElement.Text;
 
                         string[] parts = footerValue.Split(new string[] { "     .     " }, StringSplitOptions.None);
@@ -436,6 +455,10 @@ namespace SeleniumTests.Tests.Functional.Login
             _logMessages.Add(CleanMessage(message));
         }
 
+        private void WaitForUIEffect(int ms = 1000)
+        {
+            Thread.Sleep(ms);
+        }
         private string CleanMessage(string raw)
         {
             return raw?
@@ -477,10 +500,6 @@ namespace SeleniumTests.Tests.Functional.Login
         }
 
 
-        private void WaitForUIEffect(int ms = 1000)
-        {
-            Thread.Sleep(ms);
-        }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
