@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Data.Response
+﻿namespace CloudbiteBackend.IntegrationTests.Data.Response
 {
     public class RegisterResponseModel
     {

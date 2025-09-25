@@ -1,7 +1,7 @@
-﻿using ERPPlus.IntegrationTests.Config;
+﻿using CloudbiteBackend.IntegrationTests.Config;
 using RestSharp;
 
-namespace ERPPlus.IntegrationTests.Helpers
+namespace CloudbiteBackend.IntegrationTests.Helpers
 {
     public static class AuthenticationHelper
     {

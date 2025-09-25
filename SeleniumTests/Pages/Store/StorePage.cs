@@ -3,17 +3,17 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 using SeleniumExtras.WaitHelpers;
 
-namespace SeleniumTests.Pages.Stores
+namespace SeleniumTests.Pages.Store
 
 
 {
-    public class StoresPage
+    public class StorePage
     {
         private readonly IWebDriver _driver;
         private readonly WebDriverWait _wait;
 
         // Constructor
-        public StoresPage(IWebDriver driver)
+        public StorePage(IWebDriver driver)
         {
             _driver = driver;
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
@@ -49,11 +49,11 @@ namespace SeleniumTests.Pages.Stores
         private IWebElement DownloadButton { get; set; }
 
 
-        [FindsBy(How = How.CssSelector, Using = "#kt_content_container > app-store > div > div.card-header.border-0.pt-5 > div > div:nth-child(2) > a")]
+        [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-group > div.footerMarginTop > button")]
         private IWebElement ExportButton { get; set; }
 
 
-        [FindsBy(How = How.CssSelector, Using = "#kt_content_container > app-store > div > div.card-header.border-0.pt-5 > div > div:nth-child(3) > a")]
+        [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-group > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
         private IWebElement NewButton { get; set; }
 
 
@@ -61,11 +61,11 @@ namespace SeleniumTests.Pages.Stores
         private IWebElement ContinueButton { get; set; }
 
         // New Elements
-        [FindsBy(How = How.XPath, Using = "/html/body/ngb-modal-window/div/div/app-store-modal/div/div[2]/div/form/div/div/div[2]/input")]
-        public IWebElement StorenameInput { get; set; }
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"groupIdStoreGroup\"]")]
+        public IWebElement GroupcodeInput { get; set; }
 
-        [FindsBy(How = How.XPath, Using = "/html/body/ngb-modal-window/div/div/app-store-modal/div/div[2]/div/form/div/div/div[3]/div[1]/input")]
-        public IWebElement StoreCityInput { get; set; }
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"groupDesc1StoreGroup\"]")]
+        public IWebElement GroupDescInput { get; set; }
 
         [FindsBy(How = How.XPath, Using = "/html/body/ngb-modal-window/div/div/app-store-modal/div/div[2]/div/form/div/div/div[3]/div[3]/input")]
         private IWebElement StorePostCodeInput { get; set; }
@@ -108,7 +108,7 @@ namespace SeleniumTests.Pages.Stores
         public void SearchStore(string searchText)
         {
             var searchBox = new WebDriverWait(_driver, TimeSpan.FromSeconds(5))
-                .Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"kt_filter_search\"]")));
+                .Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"storeGroupSearch\"]")));
 
             searchBox.Clear();
             searchBox.SendKeys(searchText);
@@ -121,28 +121,32 @@ namespace SeleniumTests.Pages.Stores
             newButton.Click();
         }
 
-        public void ClickEditButton(string BETinNumber)
+        public void ClickEditButton(string Groupcode)
         {
-            // Search by entering BETinNumber
+            // Search by entering Groupcode
             var searchInput = _wait.Until(ExpectedConditions.ElementIsVisible(
-                By.XPath("//input[@type='text' and @placeholder='Search']")));
+                By.XPath("//*[@id=\"storeGroupSearch\"]")));
             searchInput.Clear();
-            searchInput.SendKeys(BETinNumber);
+            searchInput.SendKeys(Groupcode);
             searchInput.SendKeys(Keys.Enter);
 
-            // Wait for the row that contains the BETinNumber
-            string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(), '{BETinNumber}')]]";
+            // Dynamic XPath to find a row containing Groupcode
+            string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(.), '{Groupcode}')]]";
+
             var row = _wait.Until(driver =>
             {
                 var rows = driver.FindElements(By.XPath(rowXpath));
-                return rows.Count == 1 ? rows[0] : null;
+                return rows.FirstOrDefault(); // return the first match
             });
 
-            // Find the pencil icon inside that row (relative XPath)
-            var editIcon = row.FindElement(By.XPath(".//i[contains(@class,'bi-pencil')]"));
 
-            // Wait for it to be clickable and click
-            _wait.Until(ExpectedConditions.ElementToBeClickable(editIcon)).Click();
+            // Find the edit icon inside column 4 of this row
+            var editIcon = row.FindElement(By.XPath(".//td[4]//img[contains(@class,'store-setup-edit11')]"));
+
+            // Wait for it to be clickable and then click
+            _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(editIcon)).Click();
+
+
         }
 
 
@@ -180,19 +184,33 @@ namespace SeleniumTests.Pages.Stores
         }
 
         // New Methods for Form Fields
-        public void EnterStorename(string Storename)
+        public void EnterGroupcode(string Groupcode)
         {
-            StorenameInput.Clear();
-            StorenameInput.SendKeys(Storename);
+            GroupcodeInput.Clear();
+            GroupcodeInput.SendKeys(Groupcode);
         }
 
-        public void EnterStoreCity(string StoreCity)
+        public void EnterGroupDesc(string GroupDesc)
         {
-            StoreCityInput.Clear();
-            StoreCityInput.SendKeys(StoreCity);
+            GroupDescInput.Clear();
+            GroupDescInput.SendKeys(GroupDesc);
         }
 
-       
+
+        public void SetCheckboxState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"groupActiveStoreGroup\"]")
+            ));
+
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
+
+
+
         public void EnterBEsst(string BEsst)
         {
             BEsstInput.Clear();
@@ -328,7 +346,6 @@ namespace SeleniumTests.Pages.Stores
 
         public bool WaitForFileDownload(string folderPath, string filePrefix, TimeSpan timeout)
         {
-            string todayDate = DateTime.Now.ToString("yyyyMMdd");
             var existingFiles = new HashSet<string>(Directory.GetFiles(folderPath));
 
             var endTime = DateTime.Now + timeout;
@@ -340,7 +357,7 @@ namespace SeleniumTests.Pages.Stores
                     string fileName = Path.GetFileNameWithoutExtension(file);
 
                     // Match by prefix only; optionally check date if needed
-                    if (fileName.StartsWith(filePrefix) && fileName.Contains(todayDate) && !existingFiles.Contains(file))
+                    if (fileName.StartsWith(filePrefix) && !existingFiles.Contains(file))
                     {
                         var fileInfo = new FileInfo(file);
                         if (fileInfo.Length > 0)

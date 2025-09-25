@@ -1,11 +1,11 @@
 ﻿using NUnit.Framework;
 using RestSharp;
-using ERPPlus.IntegrationTests.Config;
-using ERPPlus.IntegrationTests.Data.Request;
-using ERPPlus.IntegrationTests.Data.Response;
+using CloudbiteBackend.IntegrationTests.Config;
+using CloudbiteBackend.IntegrationTests.Data.Request;
+using CloudbiteBackend.IntegrationTests.Data.Response;
 using Newtonsoft.Json;
 
-namespace ERPPlus.IntegrationTests.Tests.API.Authenticate
+namespace CloudbiteBackend.IntegrationTests.Tests.API.Authenticate
 {
     [TestFixture]
     public class LoginTests

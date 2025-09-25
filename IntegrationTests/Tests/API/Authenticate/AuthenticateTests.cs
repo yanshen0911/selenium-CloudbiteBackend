@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using RestSharp;
-using ERPPlus.IntegrationTests.Config;
-using ERPPlus.IntegrationTests.Data.TestData;
-using ERPPlus.IntegrationTests.Data.Request;
-using ERPPlus.IntegrationTests.Data.Response;
+using CloudbiteBackend.IntegrationTests.Config;
+using CloudbiteBackend.IntegrationTests.Data.TestData;
+using CloudbiteBackend.IntegrationTests.Data.Request;
+using CloudbiteBackend.IntegrationTests.Data.Response;
 
 namespace IntegrationTests.Tests.API.Authenticate
 {

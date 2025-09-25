@@ -16,7 +16,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="System.Windows.Forms" />
 		<PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
 		<PackageReference Include="Allure.NUnit" Version="2.12.1" />
 		<PackageReference Include="coverlet.collector" Version="6.0.0" />

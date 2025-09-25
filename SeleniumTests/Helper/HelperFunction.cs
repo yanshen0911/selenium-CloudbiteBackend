@@ -38,9 +38,9 @@ namespace SeleniumTests.Helper
 
         }
 
-        public static void WaitForSTRTableToLoad(WebDriverWait wait)
+        public static void WaitForSTRGroupTableToLoad(WebDriverWait wait)
         {
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]/div/table/tbody/tr")));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div/table/tbody/tr")));
 
         }
 

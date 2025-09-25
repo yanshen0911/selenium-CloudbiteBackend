@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Config
+﻿namespace CloudbiteBackend.IntegrationTests.Config
 {
     public static class EnvironmentConfig
     {
@@ -13,9 +13,9 @@
                     case "DEV":
                         return "https://localhost:7268";
                     case "QA":
-                        return "https://qa-api.erpplus.com";
+                        return "https://qa-api.CloudbiteBackend.com";
                     case "PROD":
-                        return "https://api.erpplus.com";
+                        return "https://api.CloudbiteBackend.com";
                     default:
                         return "https://localhost:7268"; // Default to local
                 }
@@ -30,13 +30,13 @@
                 switch (EnvironmentName)
                 {
                     case "DEV":
-                        return "Server=localhost;Database=ERPPlusDev;User Id=devUser;Password=devPassword;";
+                        return "Server=localhost;Database=CloudbiteBackendDev;User Id=devUser;Password=devPassword;";
                     case "QA":
-                        return "Server=qa-db.erpplus.com;Database=ERPPlusQA;User Id=qaUser;Password=qaPassword;";
+                        return "Server=qa-db.CloudbiteBackend.com;Database=CloudbiteBackendQA;User Id=qaUser;Password=qaPassword;";
                     case "PROD":
-                        return "Server=prod-db.erpplus.com;Database=ERPPlusProd;User Id=prodUser;Password=prodPassword;";
+                        return "Server=prod-db.CloudbiteBackend.com;Database=CloudbiteBackendProd;User Id=prodUser;Password=prodPassword;";
                     default:
-                        return "Server=localhost;Database=ERPPlusDev;User Id=devUser;Password=devPassword;";
+                        return "Server=localhost;Database=CloudbiteBackendDev;User Id=devUser;Password=devPassword;";
                 }
             }
         }

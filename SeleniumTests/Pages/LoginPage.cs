@@ -4,7 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 using SeleniumExtras.WaitHelpers;
 
-namespace ERPPlus.SeleniumTests.Pages
+namespace CloudbiteBackend.SeleniumTests.Pages
 {
     public class LoginPage
     {

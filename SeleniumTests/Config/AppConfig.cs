@@ -20,7 +20,7 @@
         public static string TestCaseFile = @"D:\e-invoice\SeleniumTests\TestCaseTemplate.xlsx";
 
         //Test Data Template
-        public static string TestDataFolder = @"D:\e-invoice\SeleniumTests\TestDataFolder";
+        public static string TestDataFolder = @"D:\cloudbite\SeleniumTests\TestDataFolder";
 
         //Downloaded File Path
         public static string DownloadPath = @"C:\Users\ChooYanShen\Downloads";
@@ -40,20 +40,6 @@
         public static string SampleReceiptImage = @"D:\e-invoice\SeleniumTests\Image\SampleReceipt.jpg";
         public static string UserProfileImage = @"D:\e-invoice\SeleniumTests\Image\UserProfileImage.png";
         public static string BusinessEntityImage = @"D:\e-invoice\SeleniumTests\Image\BusinessEntity.jpg";
-
-
-
-
-        // Function to be Add On
-        // add action download for import file (Transaction Page)
-        // Resubmit Transaction
-        // pending module -> Dashboard, Transaction, Template Editor, Report
-        // Change clean message to helper
-        // Change export to helper
-        // verify inport data
-
-        // Future Enhancement
-        // Manual Consolidation
 
     }
 }

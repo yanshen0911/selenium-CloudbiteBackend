@@ -9,8 +9,9 @@ using OfficeOpenXml.Style;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using ScreenRecorderLib;
+using SeleniumExtras.WaitHelpers;
 using SeleniumTests.Helpers;
-using SeleniumTests.Pages.Stores;
+using SeleniumTests.Pages.Store;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
@@ -19,17 +20,17 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using helperFunction = SeleniumTests.Helper.HelperFunction;
 
 
-namespace SeleniumTests.Tests.Stores
+namespace SeleniumTests.Tests.Store
 {
     [TestFixture]
     [AllureNUnit]
-    [AllureSuite("Stores - Paging")] // use this ties to module
+    [AllureSuite("Store - Paging")] // use this ties to module
     [AllureEpic("ERP-117")] // use this and ties to ticket number
 
-    public class Stores_Paging
+    public class Store_Paging
     {
         private IWebDriver _driver;
-        private StoresPage _StoresPage;
+        private StorePage _StorePage;
         private WebDriverWait _wait;
         private LoginHelper _loginHelper;
         private Recorder _recorder;
@@ -42,43 +43,56 @@ namespace SeleniumTests.Tests.Stores
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // 🧹 Delete existing export Excel file (if any)
             string today = DateTime.Now.ToString("yyyy-MM-dd");
-            string moduleName = "Stores Page - Paging"; // You can make this dynamic if needed
-            string baseFileName = $"TestResults_{moduleName.Replace(" ", "_")}_{today}.xlsx";
+            string moduleName = "Store Page - Paging"; // You can make this dynamic if needed
+
+            // 🔹 Build base folder
             string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, moduleName, today);
-            string exportPath = Path.Combine(folderWithModule, baseFileName);
+            Directory.CreateDirectory(folderWithModule);
 
-            if (File.Exists(exportPath))
+            // 🔹 Find the next version number
+            int version = 1;
+            string baseFileName;
+            string exportPath;
+            do
             {
-                File.Delete(exportPath);
-                Console.WriteLine("🗑️ Deleted existing export file: " + exportPath);
-            }
+                baseFileName = $"TestResults_{moduleName.Replace(" ", "_")}_{today}_v{version}.xlsx";
+                exportPath = Path.Combine(folderWithModule, baseFileName);
+                version++;
+            } while (File.Exists(exportPath));
 
-            // 🧹 Delete today's recording folder (if exists)
-            try
-            {
-                string baseFolderPath = AppConfig.BaseVideoFolder;
-                string todayFolderName = DateTime.Now.ToString("yyyy-MM-dd");
-                string fullFolderPath = Path.Combine(baseFolderPath, todayFolderName, moduleName);
+            // Store for use later in ExportTestResultToExcel
+            _exportFilePath = exportPath;
 
-                if (Directory.Exists(fullFolderPath))
-                {
-                    Directory.Delete(fullFolderPath, recursive: true);
-                    Console.WriteLine($"🗑️ Deleted old video folder: {fullFolderPath}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Failed to delete video folder: {ex.Message}");
-            }
+            Console.WriteLine($"📂 Using export file: {_exportFilePath}");
 
             // ✅ Continue with test setup
             _driver = DriverFactory.CreateDriver();
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
             _driver.Manage().Window.Maximize();
-            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/auth/login");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
+            // ✅ Capture footer before login
+            try
+            {
+                var footerElement = _wait.Until(ExpectedConditions.ElementIsVisible(
+                    By.XPath("/html/body/app-root/body/app-login/div/div[1]/div[2]/app-footer/div")
+                ));
+                _footerValue = footerElement.Text.Trim();
+                Console.WriteLine($"📄 Footer captured on login page: {_footerValue}");
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("⚠️ Footer not found on login page.");
+                _footerValue = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Failed to capture footer: {ex.Message}");
+                _footerValue = string.Empty;
+            }
+
+            // 🔑 Perform login AFTER capturing footer
             _loginHelper = new LoginHelper(_driver, _wait);
             _loginHelper.PerformLogin(AppConfig.UserName, AppConfig.Password, false);
             helperFunction.WaitForPageToLoad(_wait);
@@ -86,13 +100,14 @@ namespace SeleniumTests.Tests.Stores
 
 
 
+
         [SetUp]
         public void SetUp()
         {
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(3));
-            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/store");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/dashboard/sales-db");
             helperFunction.WaitForPageToLoad(_wait);
-            _StoresPage = new StoresPage(_driver);
+            _StorePage = new StorePage(_driver);
             _logMessages.Clear();
 
             _moduleName = "Store Page - Paging";
@@ -104,10 +119,18 @@ namespace SeleniumTests.Tests.Stores
             string timeStampReadable = DateTime.Now.ToString("HH-mm-ss");
 
             string fullFolderPath = Path.Combine(baseFolderPath, todayFolderName, _moduleName);
-
             Directory.CreateDirectory(fullFolderPath);
 
-            _recordingFilePath = Path.Combine(fullFolderPath, $"{_moduleName}_{testName}_{timeStampReadable}.mp4");
+            // 🔹 Add versioning for recordings
+            int version = 1;
+            string recordingFileName;
+            do
+            {
+                recordingFileName = $"{_moduleName}_{testName}_v{version}.mp4";
+                _recordingFilePath = Path.Combine(fullFolderPath, recordingFileName);
+                version++;
+            } while (File.Exists(_recordingFilePath));
+
             _recordingCompletedEvent.Reset();
 
             try
@@ -131,6 +154,8 @@ namespace SeleniumTests.Tests.Stores
                 _recorder.OnRecordingFailed += (s, e) => _recordingCompletedEvent.Set();
                 _recorder.Record(_recordingFilePath);
                 Thread.Sleep(2000);
+
+                Console.WriteLine($"📹 Recording started: {_recordingFilePath}");
             }
             catch (Exception ex)
             {
@@ -138,15 +163,22 @@ namespace SeleniumTests.Tests.Stores
             }
         }
 
+
+
         [Test]
-        [Category("Stores")]
+        [Category("Store")]
         [Order(1)]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Stores Paging")]
+        [AllureStory("Store Paging")]
         public void TestPagingNextButtonAndVerify()
         {
-            string tableXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]";
-            string nextButtonXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[2]/app-global-pagination/div/div[2]/ul/li[4]";
+            string tableXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div";
+            string nextButtonXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/button[3]";
+
+            // Step 0: Navigate to the Store page
+            LogStep("Navigate to Store group page URL.");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/store/store-group");
+            WaitForUIEffect();
 
             //  Wait for table to be visible
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath(tableXPath)));
@@ -162,7 +194,7 @@ namespace SeleniumTests.Tests.Stores
             LogStep(isDisabled
                 ? "⚠️ 'Next' button is disabled. Only one page available. Skipping pagination test."
                 : "🔎 'Next' button is enabled. Proceeding with click.");
-            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
             var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
             File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
             Assert.IsTrue(true); // Pass regardless of button state
@@ -179,7 +211,7 @@ namespace SeleniumTests.Tests.Stores
             bool tableChanged = _wait.Until(driver =>
             {
                 var updatedTable = driver.FindElement(By.XPath(tableXPath));
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
                 File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 return updatedTable.GetAttribute("innerHTML") != beforeHtml;
@@ -196,15 +228,20 @@ namespace SeleniumTests.Tests.Stores
 
 
         [Test]
-        [Category("Stores")]
+        [Category("Store")]
         [Order(2)]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Stores Paging")]
+        [AllureStory("Store Paging")]
         public void TestPagingPreviousButtonAndVerify()
         {
-            string tableXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]";
-            string nextButtonXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[2]/app-global-pagination/div/div[2]/ul/li[4]";
-            string previousButtonXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[2]/app-global-pagination/div/div[2]/ul/li[2]";
+            string tableXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div";
+            string nextButtonXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/button[3]";
+            string previousButtonXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/button[2]";
+
+            // Step 0: Navigate to the Store page
+            LogStep("Navigate to Store group page URL.");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/store/store-group");
+            WaitForUIEffect();
 
             //  Capture current table HTML content
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath(tableXPath)));
@@ -220,7 +257,7 @@ namespace SeleniumTests.Tests.Stores
             {
                 LogStep("⚠️ 'Next' button is disabled. Only one page available. Skipping test.");
                 Assert.IsTrue(true);
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
                 File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 return;
@@ -249,7 +286,7 @@ namespace SeleniumTests.Tests.Stores
             if (prevDisabled)
             {
                 LogStep("⚠️ 'Previous' button is disabled. Cannot return to page 1.");
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
                 File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 Assert.IsTrue(true);
@@ -265,7 +302,7 @@ namespace SeleniumTests.Tests.Stores
             //  Wait for table to return to original content
             bool tableReturned = _wait.Until(driver =>
             {
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
                 File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 var tableBack = driver.FindElement(By.XPath(tableXPath));
@@ -282,14 +319,19 @@ namespace SeleniumTests.Tests.Stores
 
 
         [Test]
-        [Category("Stores")]
+        [Category("Store")]
         [Order(3)]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Stores Paging - Click Last and Verify Change")]
+        [AllureStory("Store Paging - Click Last and Verify Change")]
         public void TestPagingLastButtonAndVerify()
         {
-            string tableXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]";
-            string lastButtonXPath = "//a[.//i[contains(@class,'fa-angle-double-right')]]";
+            string tableXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div";
+            string lastButtonXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/button[4]";
+
+            // Step 0: Navigate to the Store page
+            LogStep("Navigate to Store group page URL.");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/store/store-group");
+            WaitForUIEffect();
 
             // Wait for the table to be visible
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath(tableXPath)));
@@ -331,7 +373,7 @@ namespace SeleniumTests.Tests.Stores
             }
 
             // Final result logging
-            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
             var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
             File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
             LogStep(tableChanged
@@ -346,15 +388,20 @@ namespace SeleniumTests.Tests.Stores
 
 
         [Test]
-        [Category("Stores")]
+        [Category("Store")]
         [Order(4)]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Stores Paging - Click First and Verify Change")]
+        [AllureStory("Store Paging - Click First and Verify Change")]
         public void TestPagingFirstButtonAndVerify()
         {
-            string tableXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]";
-            string lastButtonXPath = "//a[.//i[contains(@class,'fa-angle-double-right')]]";
-            string firstButtonXPath = "//a[.//i[contains(@class,'fa-angle-double-left')]]";
+            string tableXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div";
+            string lastButtonXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/button[4]";
+            string firstButtonXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/button[1]";
+
+            // Step 0: Navigate to the Store page
+            LogStep("Navigate to Store group page URL.");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/store/store-group");
+            WaitForUIEffect();
 
             // Capture current table state
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath(tableXPath)));
@@ -425,7 +472,7 @@ namespace SeleniumTests.Tests.Stores
                 LogStep("⚠️ Table did not return to original after clicking 'First'.");
             }
 
-            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
             var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
             File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
             LogStep($"✅ Paging completed. TableChanged: {tableChanged}, ReturnedToFirst: {tableReturned}");
@@ -436,16 +483,22 @@ namespace SeleniumTests.Tests.Stores
 
 
         [Test]
-        [Category("Stores")]
+        [Category("Store")]
         [Order(5)]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Stores Paging - Click Page Size Dropdown and Verify Table Update")]
-        [TestCase("100")]
+        [AllureStory("Store Paging - Click Page Size Dropdown and Verify Table Update")]
+        [TestCase("25")]
         public void TestItemsPerPageVerify(string pageSizeValue)
         {
-            string tableXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]";
-            string dropdownXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[2]/app-global-pagination/div/div[1]/select";
+            string tableXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div";
+            string dropdownToggleXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/p-paginator/div/p-dropdown/div/div[2]";
+            string dropdownPanelXPath = "//body//div[contains(@class,'p-dropdown-panel')]";
             string rowSelector = "tbody tr";
+
+            // Step 0: Navigate to the Store page
+            LogStep("Navigate to Store group page URL.");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/store/store-group");
+            WaitForUIEffect();
 
             // Capture table state
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath(tableXPath)));
@@ -454,23 +507,40 @@ namespace SeleniumTests.Tests.Stores
             LogStep($"📄 Captured original HTML with {originalRowCount} rows.");
             WaitForUIEffect();
 
-            // Locate and verify dropdown
-            var dropdownElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath(dropdownXPath)));
-            var select = new SelectElement(dropdownElement);
+            // Step 1: Click the dropdown toggle
+            var dropdownToggle = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath(dropdownToggleXPath)));
+            dropdownToggle.Click();
+            LogStep("📌 Opened page size dropdown.");
 
-            bool optionExists = select.Options.Any(opt => opt.Text.Trim() == pageSizeValue);
-            if (!optionExists)
+            // Step 2: Wait for dropdown panel to appear (use longer wait)
+            var localWait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var dropdownPanel = localWait.Until(driver =>
+            {
+                var panels = driver.FindElements(By.XPath(dropdownPanelXPath));
+                return panels.FirstOrDefault(p => p.Displayed);
+            });
+
+            if (dropdownPanel == null)
+            {
+                LogStep("❌ Dropdown panel did not appear.");
+                Assert.Fail("Dropdown panel was not found.");
+            }
+
+            // Step 3: Find and click the option
+            var optionElements = dropdownPanel.FindElements(By.XPath(".//p-dropdownitem/li"));
+            var optionElement = optionElements.FirstOrDefault(el => el.Text.Trim() == pageSizeValue);
+
+            if (optionElement == null)
             {
                 LogStep($"❌ Page size '{pageSizeValue}' not found in dropdown.");
                 Assert.Fail($"Dropdown does not contain value '{pageSizeValue}'");
             }
 
-            // Select dropdown value
-            select.SelectByText(pageSizeValue);
+            optionElement.Click();
             LogStep($"✅ Selected page size: {pageSizeValue}");
             WaitForUIEffect();
 
-            // Wait for update
+            // Step 4: Wait for table update
             bool tableUpdated = _wait.Until(driver =>
             {
                 var updatedTable = driver.FindElement(By.XPath(tableXPath));
@@ -481,36 +551,41 @@ namespace SeleniumTests.Tests.Stores
 
             WaitForUIEffect();
 
-            // Log result
+            // Step 5: Log result + screenshot
+            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
+            File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
+
             if (tableUpdated)
             {
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
-                var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-                File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 LogStep("✅ Table updated or already showing all available rows.");
             }
             else
             {
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
-                var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-                File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 LogStep("❌ Table did not update as expected.");
                 Assert.Fail("Table did not update and row count exceeds selected page size.");
             }
         }
 
 
+
+
         [Test]
-        [Category("Stores")]
+        [Category("Store")]
         [Order(6)]
         [AllureSeverity(SeverityLevel.normal)]
-        [AllureStory("Stores Paging - Click Page Button Only If It Exists and Verify Table Update")]
-        [TestCase("3")]
+        [AllureStory("Store Paging - Click Page Button Only If It Exists and Verify Table Update")]
+        [TestCase("1")]
+        [TestCase("2")]
         public void TestClickPageButtonIfExists(string pageNumber)
         {
-            string tableXPath = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[1]";
-            string paginationXPathTemplate = "/html/body/app-layout/div/div/div/div/app-content/app-store/div/div[3]/div/div[2]/app-global-pagination/div/div[2]/ul/li[a[text()='{0}']]/a";
-            string dynamicPageXPath = string.Format(paginationXPathTemplate, pageNumber);
+            string tableXPath = "/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div";
+            string dynamicPageXPath = $"//p-paginator//span[2]//button[normalize-space(text())='{pageNumber}']";
+
+            // Step 0: Navigate to the Store page
+            LogStep("Navigate to Store group page URL.");
+            _driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/management/store/store-group");
+            WaitForUIEffect();
 
             // Capture current table content
             var tableElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath(tableXPath)));
@@ -518,12 +593,12 @@ namespace SeleniumTests.Tests.Stores
             LogStep("📄 Captured original table HTML.");
             WaitForUIEffect();
 
-            // Locate page number button
+            // Locate page number button dynamically
             var pageButtons = _driver.FindElements(By.XPath(dynamicPageXPath));
             if (pageButtons.Count == 0)
             {
                 LogStep($"✅ No page {pageNumber} exists — only one page available. Test logically passed.");
-                Assert.IsTrue(true);
+                Assert.IsTrue(true, $"✅ No page {pageNumber} exists — only one page available. Test logically passed.");
                 return;
             }
 
@@ -533,33 +608,38 @@ namespace SeleniumTests.Tests.Stores
             LogStep($"✅ Clicked on page number {pageNumber}.");
             WaitForUIEffect();
 
-            // Wait for table update
-            bool tableUpdated = _wait.Until(driver =>
+            bool tableUpdated = true; // default for page 1
+
+            if (pageNumber != "1")
             {
-                var updatedTable = driver.FindElement(By.XPath(tableXPath));
-                string afterHtml = updatedTable.GetAttribute("innerHTML");
-                return afterHtml != beforeHtml;
-            });
+                // For pages other than 1, ensure table updated
+                tableUpdated = _wait.Until(driver =>
+                {
+                    var updatedTable = driver.FindElement(By.XPath(tableXPath));
+                    string afterHtml = updatedTable.GetAttribute("innerHTML");
+                    return afterHtml != beforeHtml;
+                });
+            }
 
             WaitForUIEffect();
 
             // Validation
+            _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Store_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
+            File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
+
             if (tableUpdated)
             {
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
-                var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-                File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
-                LogStep($"✅ Table updated after clicking page {pageNumber}.");
+                LogStep($"✅ Paging check passed for page {pageNumber}.");
             }
             else
             {
-                _lastScreenshotPath = Path.Combine(Path.GetTempPath(), $"Stores_{DateTime.Now:yyyyMMdd_HHmmss}.png");
-                var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-                File.WriteAllBytes(_lastScreenshotPath, screenshot.AsByteArray);
                 LogStep($"❌ Table did not update after clicking page {pageNumber}.");
-                Assert.Fail("Table content did not change.");
+                Assert.Fail($"Table content did not change when navigating to page {pageNumber}.");
             }
         }
+
+
 
 
 
@@ -610,58 +690,69 @@ namespace SeleniumTests.Tests.Stores
         private string _lastModuleName = string.Empty;
         private int _testCaseCounter = 1;
         private string _lastScreenshotPath = null;
-
+        private string _exportFilePath; // add class-level field
         private void ExportTestResultToExcel(string testName, string inputParams, string result, string message, DateTime time, string screenshotPath = null)
         {
             try
             {
-                string today = DateTime.Now.ToString("yyyy-MM-dd");
-                string baseFileName = $"TestResults_{_moduleName.Replace(" ", "_")}_{today}.xlsx";
-                string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, _moduleName, today);
-                Directory.CreateDirectory(folderWithModule);
                 string testerName = AppConfig.TesterName;
 
-                string exportPath = Path.Combine(folderWithModule, baseFileName);
-
-                if (!File.Exists(exportPath))
+                // Build export file path if not yet set
+                if (string.IsNullOrEmpty(_exportFilePath))
                 {
-                    var templatePath = AppConfig.TestCaseFile;
-                    File.Copy(templatePath, exportPath);
+                    string today = DateTime.Now.ToString("yyyy-MM-dd");
+                    string moduleName = _moduleName.Replace(" ", "_");
+                    string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, _moduleName, today);
+                    Directory.CreateDirectory(folderWithModule);
+
+                    string baseFileName = $"TestResults_{moduleName}_{today}.xlsx";
+                    _exportFilePath = Path.Combine(folderWithModule, baseFileName);
                 }
 
-                var file = new FileInfo(exportPath);
-                OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                // If not exist, copy from template
+                if (!File.Exists(_exportFilePath))
+                {
+                    var templatePath = AppConfig.TestCaseFile;
+                    File.Copy(templatePath, _exportFilePath);
+                }
+
+                var file = new FileInfo(_exportFilePath);
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
                 using (var package = new ExcelPackage(file))
                 {
                     var worksheet = package.Workbook.Worksheets[0];
 
-                    // ✅ Write tester name and date
+                    // ✅ Keep header & footer design from template
                     worksheet.Cells["F2"].Value = testerName;
                     worksheet.Cells["C13"].Value = testerName;
                     worksheet.Cells["D2"].Value = _moduleName;
+                    worksheet.Cells["D7"].Value = _footerValue;
                     worksheet.Cells["B13"].Value = DateTime.Now.ToString("yyyy-MM-dd");
                     worksheet.Cells["H2"].Value = DateTime.Now.ToString("yyyy-MM-dd");
 
                     int startRow = 19;
                     int row = startRow;
 
+                    // Find next empty row (before footer starts)
                     while (!string.IsNullOrWhiteSpace(worksheet.Cells[row, 1].Text))
                     {
                         row++;
                     }
 
+                    // Reset counter if new module
                     if (_moduleName != _lastModuleName)
                     {
                         _testCaseCounter = 1;
                         _lastModuleName = _moduleName;
                     }
 
+                    // Format test steps
                     string[] steps = message.Split(new[] { '\n', '-', '•', '|' }, StringSplitOptions.RemoveEmptyEntries);
                     string formattedSteps = string.Join("\n", steps.Select((s, i) => $"{i + 1}. {s.Trim()}"));
 
+                    // Extract expected result if passed
                     string expectedResult = "";
-
                     if (result.Equals("Passed", StringComparison.OrdinalIgnoreCase))
                     {
                         var modalLine = steps.FirstOrDefault(s => s.Trim().StartsWith("Modal:", StringComparison.OrdinalIgnoreCase));
@@ -675,12 +766,9 @@ namespace SeleniumTests.Tests.Stores
                             {
                                 string trimmed = s.Trim();
                                 string lower = trimmed.ToLowerInvariant();
-
-                                if (lower.Contains("successfully") || lower.Contains("has been") || lower.Contains("was saved")
-                                    || lower.Contains("updated successfully") || lower.Contains("created") || lower.Contains("deleted")
-                                    || lower.Contains("duplicate") || lower.Contains("success") || lower.Contains("match found")
-                                    || lower.Contains("found") || lower.Contains("completed") || lower.Contains("download")
-                                    || lower.Contains("processing") || lower.Contains("succeeded"))
+                                if (lower.Contains("successfully") || lower.Contains("saved") || lower.Contains("updated") ||
+                                    lower.Contains("created") || lower.Contains("deleted") || lower.Contains("download") ||
+                                    lower.Contains("completed") || lower.Contains("match found"))
                                 {
                                     expectedResult = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(trimmed.TrimEnd('.'));
                                     break;
@@ -689,13 +777,7 @@ namespace SeleniumTests.Tests.Stores
                         }
                     }
 
-                    worksheet.Cells[row, 1].Value = _testCaseCounter;
-                    worksheet.Cells[row, 2].Value = _moduleName;
-                    worksheet.Cells[row, 3].Value = testName;
-                    worksheet.Cells[row, 4].Value = formattedSteps;
-                    worksheet.Cells[row, 5].Value = "Paging completed successfully. The data has been refreshed and reloaded.";
-
-                    // ✅ Format Input Params: Comma → Newline, remove extra spaces, wrap, align
+                    // Format input params
                     string formattedInputParams = string.Join(
                         Environment.NewLine,
                         (inputParams ?? string.Empty)
@@ -703,15 +785,29 @@ namespace SeleniumTests.Tests.Stores
                             .Select(p => p.Trim())
                     );
 
+                    // ✅ Write to main test case table (old design kept)
+                    worksheet.Cells[row, 1].Value = _testCaseCounter;
+                    worksheet.Cells[row, 2].Value = _moduleName;
+                    worksheet.Cells[row, 3].Value = testName;
+                    worksheet.Cells[row, 4].Value = formattedSteps;
+                    worksheet.Cells[row, 5].Value = expectedResult;
                     worksheet.Cells[row, 6].Value = formattedInputParams;
                     worksheet.Cells[row, 6].Style.WrapText = true;
                     worksheet.Cells[row, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                     worksheet.Cells[row, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
-
-
                     worksheet.Cells[row, 7].Value = result;
                     worksheet.Cells[row, 8].Value = time.ToString("yyyy-MM-dd HH:mm:ss");
 
+                    // ✅ Add color coding for result column
+                    var statusCell = worksheet.Cells[row, 7];
+                    statusCell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+
+                    if (result.Equals("Passed", StringComparison.OrdinalIgnoreCase))
+                        statusCell.Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
+                    else if (result.Equals("Failed", StringComparison.OrdinalIgnoreCase))
+                        statusCell.Style.Fill.BackgroundColor.SetColor(Color.LightPink);
+
+                    // ✅ Insert Screenshot (Screenshots sheet)
                     try
                     {
                         if (!string.IsNullOrEmpty(screenshotPath) && File.Exists(screenshotPath))
@@ -723,7 +819,7 @@ namespace SeleniumTests.Tests.Stores
                             int imgRow = 2;
                             while (!string.IsNullOrWhiteSpace(screenshotSheet.Cells[imgRow, 1].Text))
                             {
-                                imgRow += 28;
+                                imgRow += 28; // space between screenshots
                             }
 
                             int mergeWidth = 4;
@@ -734,15 +830,15 @@ namespace SeleniumTests.Tests.Stores
                             labelCell1.Value = $"🧪 Test Case {_testCaseCounter} : {testName}";
                             labelCell1.Style.Font.Bold = true;
                             labelCell1.Style.Font.Size = 12;
-                            labelCell1.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            labelCell1.Style.Fill.PatternType = ExcelFillStyle.Solid;
                             labelCell1.Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
-                            labelCell1.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                            labelCell1.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
                             var labelCell2 = screenshotSheet.Cells[imgRow + 1, 1];
                             labelCell2.Value = $"🕒 Timestamp: {time:yyyy-MM-dd HH:mm:ss}";
                             labelCell2.Style.Font.Italic = true;
                             labelCell2.Style.Font.Size = 11;
-                            labelCell2.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            labelCell2.Style.Fill.PatternType = ExcelFillStyle.Solid;
                             labelCell2.Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
 
                             for (int col = 1; col <= mergeWidth; col++)
@@ -763,54 +859,40 @@ namespace SeleniumTests.Tests.Stores
                         Console.WriteLine("⚠️ Failed to insert screenshot: " + imgEx.Message);
                     }
 
-                    try
-                    {
-                        var footerElement = _driver.FindElement(By.XPath("/html/body/app-layout/div/div/div/app-footer/div/div/span[2]"));
-                        string footerValue = footerElement.Text;
-
-                        string[] parts = footerValue.Split(new string[] { "     .     " }, StringSplitOptions.None);
-                        string combinedValue;
-
-                        if (parts.Length == 2)
-                        {
-                            combinedValue = parts[0] + Environment.NewLine + parts[1];
-                        }
-                        else
-                        {
-                            combinedValue = footerValue;
-                        }
-
-                        worksheet.Cells["D7"].Value = combinedValue;
-                        worksheet.Cells["D7"].Style.WrapText = true;
-
-                        Console.WriteLine($"📄 Inserted formatted footer to D7:\n{combinedValue}");
-                    }
-                    catch (NoSuchElementException)
-                    {
-                        Console.WriteLine("⚠️ Footer element not found. Skipping D7.");
-                    }
-
-                    var statusCell = worksheet.Cells[row, 7];
-                    statusCell.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-
-                    if (result.Equals("Passed", StringComparison.OrdinalIgnoreCase))
-                        statusCell.Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
-                    else if (result.Equals("Failed", StringComparison.OrdinalIgnoreCase))
-                        statusCell.Style.Fill.BackgroundColor.SetColor(Color.LightPink);
-
-                    _testCaseCounter++;
                     package.Save();
+                    _testCaseCounter++;
                 }
-
-                Console.WriteLine("✅ Excel exported to new file: " + exportPath);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Failed to export to Excel: " + ex.Message);
+                Console.WriteLine("❌ Error in ExportTestResultToExcel: " + ex.Message);
             }
         }
 
 
+        private string _footerValue = string.Empty;
+        public void CaptureFooterBeforeLogin()
+        {
+            try
+            {
+                var footerElement = _wait.Until(ExpectedConditions.ElementIsVisible(
+                    By.XPath("/html/body/app-root/body/app-login/div/div[1]/div[2]/app-footer/div")
+                ));
+
+                _footerValue = footerElement.Text.Trim();
+                Console.WriteLine($"📄 Footer captured on login page: {_footerValue}");
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("⚠️ Footer not found on login page.");
+                _footerValue = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Failed to capture footer on login page: {ex.Message}");
+                _footerValue = string.Empty;
+            }
+        }
 
         private void LogStep(string message)
         {

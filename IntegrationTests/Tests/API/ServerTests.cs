@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using RestSharp;
-using ERPPlus.IntegrationTests.Config;
-using ERPPlus.IntegrationTests.Data.Request;
+using CloudbiteBackend.IntegrationTests.Config;
+using CloudbiteBackend.IntegrationTests.Data.Request;
 
-namespace ERPPlus.IntegrationTests.Tests.API
+namespace CloudbiteBackend.IntegrationTests.Tests.API
 {
     [TestFixture]
     public class ServerTests

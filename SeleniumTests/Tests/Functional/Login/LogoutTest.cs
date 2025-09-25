@@ -3,7 +3,7 @@ using Allure.NUnit;
 using Allure.NUnit.Attributes;
 using CloudbiteBackend.SeleniumTests.Config;
 using CloudbiteBackend.SeleniumTests.Drivers;
-using ERPPlus.SeleniumTests.Pages;
+using CloudbiteBackend.SeleniumTests.Pages;
 using NUnit.Framework;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -13,8 +13,8 @@ using ScreenRecorderLib;
 using SeleniumExtras.WaitHelpers;
 using SeleniumTests.Helper;
 using SeleniumTests.Pages;
-using SeleniumTests.Pages.Stores;
-using SeleniumTests.Tests.Stores;
+using SeleniumTests.Pages.Store;
+using SeleniumTests.Tests.Store;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
@@ -79,66 +79,67 @@ namespace SeleniumTests.Tests.Functional.Login
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // 🧹 Delete existing export Excel file (if any)
             string today = DateTime.Now.ToString("yyyy-MM-dd");
             string moduleName = "Logout Page"; // You can make this dynamic if needed
-            string baseFileName = $"TestResults_{moduleName.Replace(" ", "_")}_{today}.xlsx";
+
+            // 🔹 Build base folder
             string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, moduleName, today);
-            string exportPath = Path.Combine(folderWithModule, baseFileName);
+            Directory.CreateDirectory(folderWithModule);
 
-            if (File.Exists(exportPath))
+            // 🔹 Find the next version number
+            int version = 1;
+            string baseFileName;
+            string exportPath;
+            do
             {
-                File.Delete(exportPath);
-                Console.WriteLine("🗑️ Deleted existing export file: " + exportPath);
-            }
+                baseFileName = $"TestResults_{moduleName.Replace(" ", "_")}_{today}_v{version}.xlsx";
+                exportPath = Path.Combine(folderWithModule, baseFileName);
+                version++;
+            } while (File.Exists(exportPath));
 
-            // 🧹 Delete today's recording folder (if exists)
-            try
-            {
-                string baseFolderPath = AppConfig.BaseVideoFolder;
-                string todayFolderName = DateTime.Now.ToString("yyyy-MM-dd");
-                string fullFolderPath = Path.Combine(baseFolderPath, todayFolderName, moduleName);
+            // Store for use later in ExportTestResultToExcel
+            _exportFilePath = exportPath;
 
-                if (Directory.Exists(fullFolderPath))
-                {
-                    Directory.Delete(fullFolderPath, recursive: true);
-                    Console.WriteLine($"🗑️ Deleted old video folder: {fullFolderPath}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Failed to delete video folder: {ex.Message}");
-            }
+            Console.WriteLine($"📂 Using export file: {_exportFilePath}");
 
             // ✅ Continue with test setup
             driver = DriverFactory.CreateDriver();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
             driver.Manage().Window.Maximize();
-            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/auth/login");
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
         }
 
         [SetUp]
         public void SetUp()
         {
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(3));
-            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/dashboard");
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
             helperFunction.WaitForPageToLoad(wait);
 
             _loginPage = new LoginPage(driver, wait);
             _logMessages.Clear();
             _moduleName = "Logout Page";
 
-            // Build file path details
             string testName = NUnit.Framework.TestContext.CurrentContext.Test.MethodName;
             string baseFolderPath = AppConfig.BaseVideoFolder;
             string todayFolderName = DateTime.Now.ToString("yyyy-MM-dd");
-            string timeStampReadable = DateTime.Now.ToString("HH-mm-ss");
 
             string fullFolderPath = Path.Combine(baseFolderPath, todayFolderName, _moduleName);
-
             Directory.CreateDirectory(fullFolderPath);
 
-            _recordingFilePath = Path.Combine(fullFolderPath, $"{_moduleName}_{testName}_{timeStampReadable}.mp4");
+            // 🔹 Generate recording file with versioning
+            string timeStampReadable = DateTime.Now.ToString("HH-mm-ss");
+            int version = 1;
+            string recordingFileName;
+            string recordingPath;
+            do
+            {
+                recordingFileName = $"{_moduleName}_{testName}_v{version}.mp4";
+                recordingPath = Path.Combine(fullFolderPath, recordingFileName);
+                version++;
+            } while (File.Exists(recordingPath));
+
+            _recordingFilePath = recordingPath;
             _recordingCompletedEvent.Reset();
 
             try
@@ -162,6 +163,8 @@ namespace SeleniumTests.Tests.Functional.Login
                 _recorder.OnRecordingFailed += (s, e) => _recordingCompletedEvent.Set();
                 _recorder.Record(_recordingFilePath);
                 Thread.Sleep(2000);
+
+                Console.WriteLine($"🎥 Recording started: {_recordingFilePath}");
             }
             catch (Exception ex)
             {
@@ -181,7 +184,7 @@ namespace SeleniumTests.Tests.Functional.Login
             string password = AppConfig.Password;
 
             LogStep("Navigating to login page");
-            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/auth/login");
+            driver.Navigate().GoToUrl(AppConfig.BaseUrl + "/login");
 
             LogStep("Entering username and password");
             _loginPage.EnterUsername(username);
@@ -193,7 +196,7 @@ namespace SeleniumTests.Tests.Functional.Login
             if (isValidLogin == "1")
             {
                 LogStep("Waiting for dashboard URL to confirm successful login");
-                wait.Until(ExpectedConditions.UrlContains("dashboard"));
+                wait.Until(ExpectedConditions.UrlContains("/management/dashboard/sales-db"));
 
                 LogStep("✅ Login succeeded. Capturing screenshot.");
                 string loginSuccessScreenshot = Path.Combine(Path.GetTempPath(), $"Login_Success_{DateTime.Now:yyyyMMdd_HHmmss}.png");
@@ -201,7 +204,7 @@ namespace SeleniumTests.Tests.Functional.Login
                 File.WriteAllBytes(loginSuccessScreenshot, screenshot.AsByteArray);
                 _lastScreenshotPath = loginSuccessScreenshot;
 
-                Assert.IsTrue(driver.Url.Contains("dashboard"), "Login was expected to succeed, but did not reach dashboard.");
+                Assert.IsTrue(driver.Url.Contains("/management/dashboard/sales-db"), "Login was expected to succeed, but did not reach dashboard.");
 
                 // ✅ Perform Logout with failure handling
                 try
@@ -209,14 +212,14 @@ namespace SeleniumTests.Tests.Functional.Login
                     LogStep("Attempting to logout");
 
                     // 👉 Replace this with your actual logout button locator
-                    var logoutDropdownButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("/html/body/app-layout/div/div/div/app-header/div/app-topbar/div/span")));
+                    var logoutDropdownButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("/html/body/app-root/body/app-management/div/mat-toolbar/mat-toolbar-row/div/button")));
                     logoutDropdownButton.Click();
 
-                    var logoutButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("/html/body/app-user-inner/div[5]/a")));
+                    var logoutButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("/html/body/div[2]/div[2]/div/div/div/button[2]")));
                     logoutButton.Click();
 
                     LogStep("Waiting to be redirected to login page after logout");
-                    wait.Until(ExpectedConditions.UrlContains("/auth/login"));
+                    wait.Until(ExpectedConditions.UrlContains("/login"));
 
                     LogStep("✅ Logout successful. Capturing screenshot.");
                     string logoutScreenshot = Path.Combine(Path.GetTempPath(), $"Logout_Success_{DateTime.Now:yyyyMMdd_HHmmss}.png");
@@ -224,7 +227,7 @@ namespace SeleniumTests.Tests.Functional.Login
                     File.WriteAllBytes(logoutScreenshot, logoutShot.AsByteArray);
                     _lastScreenshotPath = logoutScreenshot;
 
-                    Assert.IsTrue(driver.Url.Contains("/auth/login"), "After logout, expected to be redirected to login page.");
+                    Assert.IsTrue(driver.Url.Contains("/login"), "After logout, expected to be redirected to login page.");
                 }
                 catch (Exception ex)
                 {
@@ -250,7 +253,7 @@ namespace SeleniumTests.Tests.Functional.Login
             else
             {
                 LogStep("Waiting to remain on login page due to invalid login");
-                wait.Until(ExpectedConditions.UrlContains("/auth/login"));
+                wait.Until(ExpectedConditions.UrlContains("/login"));
 
                 LogStep("✅ Login failed as expected. Capturing screenshot.");
                 string screenshotPath = Path.Combine(Path.GetTempPath(), $"Login_Failure_{DateTime.Now:yyyyMMdd_HHmmss}.png");
@@ -258,7 +261,7 @@ namespace SeleniumTests.Tests.Functional.Login
                 File.WriteAllBytes(screenshotPath, screenshot.AsByteArray);
                 _lastScreenshotPath = screenshotPath;
 
-                Assert.IsTrue(driver.Url.Contains("/auth/login"), "Login was expected to fail, but URL changed unexpectedly.");
+                Assert.IsTrue(driver.Url.Contains("/login"), "Login was expected to fail, but URL changed unexpectedly.");
             }
         }
 
@@ -312,32 +315,26 @@ namespace SeleniumTests.Tests.Functional.Login
         private string _lastModuleName = string.Empty;
         private int _testCaseCounter = 1;
         private string _lastScreenshotPath = null;
+        private string _exportFilePath; // add class-level field
 
         private void ExportTestResultToExcel(string testName, string inputParams, string result, string message, DateTime time, string screenshotPath = null)
         {
             try
             {
-                string today = DateTime.Now.ToString("yyyy-MM-dd");
-                string baseFileName = $"TestResults_{_moduleName.Replace(" ", "_")}_{today}.xlsx";
-                string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, _moduleName, today);
-                Directory.CreateDirectory(folderWithModule);
                 string testerName = AppConfig.TesterName;
 
-                string exportPath = Path.Combine(folderWithModule, baseFileName);
-
-                if (!File.Exists(exportPath))
+                if (!File.Exists(_exportFilePath))
                 {
                     var templatePath = AppConfig.TestCaseFile;
-                    File.Copy(templatePath, exportPath);
+                    File.Copy(templatePath, _exportFilePath);
                 }
 
-                var file = new FileInfo(exportPath);
+                var file = new FileInfo(_exportFilePath);
                 OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
                 using (var package = new ExcelPackage(file))
                 {
                     var worksheet = package.Workbook.Worksheets[0];
-
                     // ✅ Write tester name and date
                     worksheet.Cells["F2"].Value = testerName;
                     worksheet.Cells["C13"].Value = testerName;
@@ -467,7 +464,7 @@ namespace SeleniumTests.Tests.Functional.Login
 
                     try
                     {
-                        var footerElement = driver.FindElement(By.XPath("/html/body/app-layout/div/div/div/app-footer/div/div/span[2]"));
+                        var footerElement = driver.FindElement(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-dashboard/div/app-sales-dashboard/div[2]/div/span[2]"));
                         string footerValue = footerElement.Text;
 
                         string[] parts = footerValue.Split(new string[] { "     .     " }, StringSplitOptions.None);
@@ -504,13 +501,14 @@ namespace SeleniumTests.Tests.Functional.Login
                     package.Save();
                 }
 
-                Console.WriteLine("✅ Excel exported to new file: " + exportPath);
+                Console.WriteLine("✅ Excel exported to new file: " + _exportFilePath);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("❌ Failed to export to Excel: " + ex.Message);
             }
         }
+
 
 
         private void LogStep(string message)

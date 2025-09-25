@@ -2,7 +2,7 @@
 using SeleniumExtras.WaitHelpers;
 using OpenQA.Selenium.Support.UI;
 using CloudbiteBackend.SeleniumTests.Config;
-using ERPPlus.SeleniumTests.Pages;
+using CloudbiteBackend.SeleniumTests.Pages;
 
 namespace SeleniumTests.Helpers
 {

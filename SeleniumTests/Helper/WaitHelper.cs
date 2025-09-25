@@ -2,7 +2,7 @@
 using OpenQA.Selenium.Support.UI;
 using System;
 
-namespace ERPPlus.SeleniumTests.Helpers
+namespace CloudbiteBackend.SeleniumTests.Helpers
 {
     public static class WaitHelper
     {

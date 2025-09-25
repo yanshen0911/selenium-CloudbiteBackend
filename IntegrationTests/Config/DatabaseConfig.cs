@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Config
+﻿namespace CloudbiteBackend.IntegrationTests.Config
 {
     public static class DatabaseConfig
     {
@@ -11,7 +11,7 @@
         // Example method to return a test-specific database connection string
         public static string GetTestDatabaseConnectionString()
         {
-            return "Server=localhost;Database=ERPPlusTest;User Id=testUser;Password=testPassword;";
+            return "Server=localhost;Database=CloudbiteBackendTest;User Id=testUser;Password=testPassword;";
         }
     }
 }

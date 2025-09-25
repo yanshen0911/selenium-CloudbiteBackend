@@ -1,7 +1,7 @@
 @echo off
 
-REM Change directory to D:\git\erpplus-qa\SeleniumTests\bin\Debug\net8.0
-cd /d D:\git\erpplus-qa\SeleniumTests\bin\Debug\net8.0
+REM Change directory to D:\git\CloudbiteBackend-qa\SeleniumTests\bin\Debug\net8.0
+cd /d D:\git\CloudbiteBackend-qa\SeleniumTests\bin\Debug\net8.0
 
 REM Delete the allure-results folder and its contents
 if exist allure-results (
@@ -24,7 +24,7 @@ timeout /t 3 /nobreak >nul
 REM  Open the generated Allure report (index.html) with Google Chrome
 if exist allure-report\index.html (
     REM Modify the Chrome path to match where Chrome is installed on your machine
-    "C:\Program Files\Google\Chrome\Application\chrome.exe" "D:\git\erpplus-qa\SeleniumTests\bin\Debug\net8.0\allure-report\index.html"
+    "C:\Program Files\Google\Chrome\Application\chrome.exe" "D:\git\CloudbiteBackend-qa\SeleniumTests\bin\Debug\net8.0\allure-report\index.html"
 ) else (
     echo "Allure report not found. Unable to open index.html."
 )

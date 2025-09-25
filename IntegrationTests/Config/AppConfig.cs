@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Config
+﻿namespace CloudbiteBackend.IntegrationTests.Config
 {
     public static class AppConfig
     {

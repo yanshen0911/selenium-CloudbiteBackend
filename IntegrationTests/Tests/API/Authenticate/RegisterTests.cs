@@ -1,8 +1,8 @@
 ﻿using RestSharp;
-using ERPPlus.IntegrationTests.Config;
-using ERPPlus.IntegrationTests.Data.Request;
+using CloudbiteBackend.IntegrationTests.Config;
+using CloudbiteBackend.IntegrationTests.Data.Request;
 
-namespace ERPPlus.IntegrationTests.Tests.API.Authenticate
+namespace CloudbiteBackend.IntegrationTests.Tests.API.Authenticate
 {
     [TestFixture]
     public class RegisterTests

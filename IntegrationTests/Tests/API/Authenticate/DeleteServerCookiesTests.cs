@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using RestSharp;
-using ERPPlus.IntegrationTests.Config;
+using CloudbiteBackend.IntegrationTests.Config;
 
-namespace ERPPlus.IntegrationTests.Tests.API.Authenticate
+namespace CloudbiteBackend.IntegrationTests.Tests.API.Authenticate
 {
     [TestFixture]
     public class DeleteServerCookiesTests

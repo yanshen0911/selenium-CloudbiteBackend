@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ERPPlus.IntegrationTests.Data.TestData
+namespace CloudbiteBackend.IntegrationTests.Data.TestData
 {
     public static class LoginData
     {

@@ -1,4 +1,4 @@
-﻿namespace ERPPlus.IntegrationTests.Data.Request
+﻿namespace CloudbiteBackend.IntegrationTests.Data.Request
 {
     public class ServerSearchModel
     {

@@ -3,7 +3,7 @@ using Allure.NUnit;
 using Allure.NUnit.Attributes;
 using CloudbiteBackend.SeleniumTests.Config;
 using CloudbiteBackend.SeleniumTests.Drivers;
-using ERPPlus.SeleniumTests.Pages;
+using CloudbiteBackend.SeleniumTests.Pages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
 using OfficeOpenXml;
@@ -12,16 +12,11 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using ScreenRecorderLib;
 using SeleniumExtras.WaitHelpers;
-using SeleniumTests.Helpers;
-using SeleniumTests.Tests.Stores;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using helperFunction = SeleniumTests.Helper.HelperFunction;
-using System.Drawing;                // For Rectangle
-using System.Windows.Forms;          // For Screen
-using ScreenRecorderLib;
 
 namespace SeleniumTests.Tests.Functional.Login
 {
@@ -46,36 +41,28 @@ namespace SeleniumTests.Tests.Functional.Login
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // 🧹 Delete existing export Excel file (if any)
             string today = DateTime.Now.ToString("yyyy-MM-dd");
             string moduleName = "Login Page"; // You can make this dynamic if needed
-            string baseFileName = $"TestResults_{moduleName.Replace(" ", "_")}_{today}.xlsx";
+
+            // 🔹 Build base folder
             string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, moduleName, today);
-            string exportPath = Path.Combine(folderWithModule, baseFileName);
+            Directory.CreateDirectory(folderWithModule);
 
-            if (File.Exists(exportPath))
+            // 🔹 Find the next version number
+            int version = 1;
+            string baseFileName;
+            string exportPath;
+            do
             {
-                File.Delete(exportPath);
-                Console.WriteLine("🗑️ Deleted existing export file: " + exportPath);
-            }
+                baseFileName = $"TestResults_{moduleName.Replace(" ", "_")}_{today}_v{version}.xlsx";
+                exportPath = Path.Combine(folderWithModule, baseFileName);
+                version++;
+            } while (File.Exists(exportPath));
 
-            // 🧹 Delete today's recording folder (if exists)
-            try
-            {
-                string baseFolderPath = AppConfig.BaseVideoFolder;
-                string todayFolderName = DateTime.Now.ToString("yyyy-MM-dd");
-                string fullFolderPath = Path.Combine(baseFolderPath, todayFolderName, moduleName);
+            // Store for use later in ExportTestResultToExcel
+            _exportFilePath = exportPath;
 
-                if (Directory.Exists(fullFolderPath))
-                {
-                    Directory.Delete(fullFolderPath, recursive: true);
-                    Console.WriteLine($"🗑️ Deleted old video folder: {fullFolderPath}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Failed to delete video folder: {ex.Message}");
-            }
+            Console.WriteLine($"📂 Using export file: {_exportFilePath}");
 
             // ✅ Continue with test setup
             driver = DriverFactory.CreateDriver();
@@ -96,17 +83,26 @@ namespace SeleniumTests.Tests.Functional.Login
             _logMessages.Clear();
             _moduleName = "Login Page";
 
-            // Build file path details
             string testName = NUnit.Framework.TestContext.CurrentContext.Test.MethodName;
             string baseFolderPath = AppConfig.BaseVideoFolder;
             string todayFolderName = DateTime.Now.ToString("yyyy-MM-dd");
-            string timeStampReadable = DateTime.Now.ToString("HH-mm-ss");
 
             string fullFolderPath = Path.Combine(baseFolderPath, todayFolderName, _moduleName);
-
             Directory.CreateDirectory(fullFolderPath);
 
-            _recordingFilePath = Path.Combine(fullFolderPath, $"{_moduleName}_{testName}_{timeStampReadable}.mp4");
+            // 🔹 Generate recording file with versioning
+            string timeStampReadable = DateTime.Now.ToString("HH-mm-ss");
+            int version = 1;
+            string recordingFileName;
+            string recordingPath;
+            do
+            {
+                recordingFileName = $"{_moduleName}_{testName}_v{version}.mp4";
+                recordingPath = Path.Combine(fullFolderPath, recordingFileName);
+                version++;
+            } while (File.Exists(recordingPath));
+
+            _recordingFilePath = recordingPath;
             _recordingCompletedEvent.Reset();
 
             try
@@ -130,12 +126,15 @@ namespace SeleniumTests.Tests.Functional.Login
                 _recorder.OnRecordingFailed += (s, e) => _recordingCompletedEvent.Set();
                 _recorder.Record(_recordingFilePath);
                 Thread.Sleep(2000);
+
+                Console.WriteLine($"🎥 Recording started: {_recordingFilePath}");
             }
             catch (Exception ex)
             {
                 LogStep($"❌ Failed to start recorder: {ex.Message}");
             }
         }
+
 
 
         [Test]
@@ -248,32 +247,26 @@ namespace SeleniumTests.Tests.Functional.Login
         private string _lastModuleName = string.Empty;
         private int _testCaseCounter = 1;
         private string _lastScreenshotPath = null;
+        private string _exportFilePath; // add class-level field
 
         private void ExportTestResultToExcel(string testName, string inputParams, string result, string message, DateTime time, string screenshotPath = null)
         {
             try
             {
-                string today = DateTime.Now.ToString("yyyy-MM-dd");
-                string baseFileName = $"TestResults_{_moduleName.Replace(" ", "_")}_{today}.xlsx";
-                string folderWithModule = Path.Combine(AppConfig.CsvExportFolder, _moduleName, today);
-                Directory.CreateDirectory(folderWithModule);
                 string testerName = AppConfig.TesterName;
 
-                string exportPath = Path.Combine(folderWithModule, baseFileName);
-
-                if (!File.Exists(exportPath))
+                if (!File.Exists(_exportFilePath))
                 {
                     var templatePath = AppConfig.TestCaseFile;
-                    File.Copy(templatePath, exportPath);
+                    File.Copy(templatePath, _exportFilePath);
                 }
 
-                var file = new FileInfo(exportPath);
+                var file = new FileInfo(_exportFilePath);
                 OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
                 using (var package = new ExcelPackage(file))
                 {
                     var worksheet = package.Workbook.Worksheets[0];
-
                     // ✅ Write tester name and date
                     worksheet.Cells["F2"].Value = testerName;
                     worksheet.Cells["C13"].Value = testerName;
@@ -440,7 +433,7 @@ namespace SeleniumTests.Tests.Functional.Login
                     package.Save();
                 }
 
-                Console.WriteLine("✅ Excel exported to new file: " + exportPath);
+                Console.WriteLine("✅ Excel exported to new file: " + _exportFilePath);
             }
             catch (Exception ex)
             {
