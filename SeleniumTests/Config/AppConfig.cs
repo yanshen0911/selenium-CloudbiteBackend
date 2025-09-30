@@ -3,6 +3,13 @@
     public static class AppConfig
     {
         public static string TesterName = "Choo Yan Shen";
+        public static string FEDeveloperName = "Fahmy";
+        public static string BEDeveloperName = "Hanif";
+        public static string ManagerName = "Alan Ong";
+        public static string ClientName = "";
+        public static string ChangeDesc = "";
+
+
 
         //Staging Env
         public static string BaseUrl => "https://test4.cloudbite-staging.qubeposcloud-uat.com";
@@ -17,7 +24,7 @@
         public static string CsvExportFolder => @"C:\Users\ChooYanShen\Desktop\Cloudbite_Backend\TestCase";
 
         //Test Case Template
-        public static string TestCaseFile = @"D:\e-invoice\SeleniumTests\TestCaseTemplate.xlsx";
+        public static string TestCaseFile = @"D:\cloudbite\SeleniumTests\TestCaseTemplate.xlsx";
 
         //Test Data Template
         public static string TestDataFolder = @"D:\cloudbite\SeleniumTests\TestDataFolder";
@@ -26,20 +33,20 @@
         public static string DownloadPath = @"C:\Users\ChooYanShen\Downloads";
 
         //Import Template Empty File
-        public static string ImportBECSVFile = @"D:\e-invoice\SeleniumTests\Import Template Without Data\supplier.csv";
-        public static string ImportStoreCSVFile = @"D:\e-invoice\SeleniumTests\Import Template Without Data\Store Excel Sheet-Template.csv";   
-        public static string ImportCustomerCSVFile = @"D:\e-invoice\SeleniumTests\Import Template Without Data\Customer Excel Sheet-Template.csv";
+        public static string ImportBECSVFile = @"D:\cloudbite\SeleniumTests\Import Template Without Data\supplier.csv";
+        public static string ImportStoreCSVFile = @"D:\cloudbite\SeleniumTests\Import Template Without Data\Store Excel Sheet-Template.csv";   
+        public static string ImportCustomerCSVFile = @"D:\cloudbite\SeleniumTests\Import Template Without Data\Customer Excel Sheet-Template.csv";
 
         //Import Template Data File
         // add action download
-        //public static string ImportBECSVFile = @"D:\e-invoice\SeleniumTests\Import Template\supplier.csv";
-        //public static string ImportStoreCSVFile = @"D:\e-invoice\SeleniumTests\Import Template\Store Excel Sheet-Template.csv";
-        //public static string ImportCustomerCSVFile = @"D:\e-invoice\SeleniumTests\Import Template\Customer Excel Sheet-Template.csv";
+        //public static string ImportBECSVFile = @"D:\cloudbite\SeleniumTests\Import Template\supplier.csv";
+        //public static string ImportStoreCSVFile = @"D:\cloudbite\SeleniumTests\Import Template\Store Excel Sheet-Template.csv";
+        //public static string ImportCustomerCSVFile = @"D:\cloudbite\SeleniumTests\Import Template\Customer Excel Sheet-Template.csv";
 
         //Image Path
-        public static string SampleReceiptImage = @"D:\e-invoice\SeleniumTests\Image\SampleReceipt.jpg";
-        public static string UserProfileImage = @"D:\e-invoice\SeleniumTests\Image\UserProfileImage.png";
-        public static string BusinessEntityImage = @"D:\e-invoice\SeleniumTests\Image\BusinessEntity.jpg";
+        public static string SampleReceiptImage = @"D:\cloudbite\SeleniumTests\Image\SampleReceipt.jpg";
+        public static string UserProfileImage = @"D:\cloudbite\SeleniumTests\Image\UserProfileImage.png";
+        public static string BusinessEntityImage = @"D:\cloudbite\SeleniumTests\Image\BusinessEntity.jpg";
 
     }
 }

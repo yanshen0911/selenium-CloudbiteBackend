@@ -48,14 +48,32 @@ namespace SeleniumTests.Pages.Store
         [FindsBy(How = How.CssSelector, Using = "#kt_body > ngb-modal-window > div > div > app-upload-modal > div > div.modal-body.px-20 > div > div > div.d-flex.align-items-center > button")]
         private IWebElement DownloadButton { get; set; }
 
-
         [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-group > div.footerMarginTop > button")]
         private IWebElement ExportButton { get; set; }
 
+        [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-zone > div.footerMarginTop > button")]
+        private IWebElement ExportLocationButton { get; set; }
+
+        [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-setup > div.footerMarginTop > button")]
+        private IWebElement ExportStoreButton { get; set; }
 
         [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-group > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
-        private IWebElement NewButton { get; set; }
+        private IWebElement NewGroupButton { get; set; }
 
+        [FindsBy(How = How.CssSelector, Using = "#mat-tab-content-0-0 > div > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
+        private IWebElement NewCountryButton { get; set; }
+
+        [FindsBy(How = How.CssSelector, Using = "#mat-tab-content-0-1 > div > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
+        private IWebElement NewStateButton { get; set; }
+
+        [FindsBy(How = How.CssSelector, Using = "#mat-tab-content-0-2 > div > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
+        private IWebElement NewCityButton { get; set; }
+
+        [FindsBy(How = How.CssSelector, Using = "body > app-management > div > mat-sidenav-container > mat-sidenav-content > div:nth-child(2) > app-store > div > div > app-store-setup > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
+        private IWebElement NewStoreButton { get; set; }
+
+        [FindsBy(How = How.CssSelector, Using = "#mat-tab-content-0-2 > div > p-toolbar > div > div.p-toolbar-group-right.ng-star-inserted > button")]
+        private IWebElement NewTerminalButton { get; set; }
 
         [FindsBy(How = How.XPath, Using = "//*[@id=\"kt_body\"]/ngb-modal-window/div/div/app-store-modal/div/div[3]/div/div[2]/button")]
         private IWebElement ContinueButton { get; set; }
@@ -64,11 +82,77 @@ namespace SeleniumTests.Pages.Store
         [FindsBy(How = How.XPath, Using = "//*[@id=\"groupIdStoreGroup\"]")]
         public IWebElement GroupcodeInput { get; set; }
 
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"zoneIdStoreCountry\"]")]
+        public IWebElement CountrycodeInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"regionIdStoreState\"]")]
+        public IWebElement StatecodeInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"areaIdStoreCity\"]")]
+        public IWebElement CitycodeInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"idStoreSetup\"]")]
+        public IWebElement StorecodeInput { get; set; }
+
         [FindsBy(How = How.XPath, Using = "//*[@id=\"groupDesc1StoreGroup\"]")]
         public IWebElement GroupDescInput { get; set; }
 
-        [FindsBy(How = How.XPath, Using = "/html/body/ngb-modal-window/div/div/app-store-modal/div/div[2]/div/form/div/div/div[3]/div[3]/input")]
-        private IWebElement StorePostCodeInput { get; set; }
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"zoneDesc1StoreCountry\"]")]
+        public IWebElement CountryDescInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"regionDesc1StoreState\"]")]
+        public IWebElement StateDescInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"areaDesc1StoreCity\"]")]
+        public IWebElement CityDescInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"desc1StoreSetup\"]")]
+        public IWebElement StoreNameInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"desc2StoreSetup\"]")]
+        public IWebElement StoreDescInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"ptcStoreSetup\"]")]
+        public IWebElement ContactPersonInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"add1StoreSetup\"]")]
+        public IWebElement Address1Input { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"add2StoreSetup\"]")]
+        public IWebElement Address2Input { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"add3StoreSetup\"]")]
+        public IWebElement Address3Input { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"add4StoreSetup\"]")]
+        public IWebElement Address4Input { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"postCodeStoreSetup\"]")]
+        private IWebElement PostCodeInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"emailStoreSetup\"]")]
+        private IWebElement StoreEmailInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"phoneNo1StoreSetup\"]")]
+        private IWebElement StorePhoneNumberInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"eatmolMerchantStoreSetup\"]")]
+        private IWebElement EatmolMerchantIDInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"phoneNumber\"]")]
+        private IWebElement FooterPhoneNumberInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"email\"]")]
+        private IWebElement FooterEmailInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"footer\"]")]
+        private IWebElement FooterMessageInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"terminalIdCheck\"]")]
+        private IWebElement TerminalIDInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id=\"terminalDesc1Check\"]")]
+        private IWebElement TerminalDescInput { get; set; }
 
         [FindsBy(How = How.XPath, Using = "/html/body/ngb-modal-window/div/div/app-store-modal/div/div[2]/div/div/div[2]/div/app-step1s/div/form/div/div/div[4]/input")]
         private IWebElement BEsstInput { get; set; }
@@ -115,10 +199,80 @@ namespace SeleniumTests.Pages.Store
 
         }
 
-        public void ClickNewButton()
+        public void SearchStoreCountry(string searchText)
         {
-            var newButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewButton));
-            newButton.Click();
+            var searchBox = new WebDriverWait(_driver, TimeSpan.FromSeconds(5))
+                .Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"storeCountrySearch\"]")));
+
+            searchBox.Clear();
+            searchBox.SendKeys(searchText);
+
+        }
+
+        public void SearchStoreState(string searchText)
+        {
+            var searchBox = new WebDriverWait(_driver, TimeSpan.FromSeconds(5))
+                .Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"storeStateSearch\"]")));
+
+            searchBox.Clear();
+            searchBox.SendKeys(searchText);
+
+        }
+
+        public void SearchStoreCity(string searchText)
+        {
+            var searchBox = new WebDriverWait(_driver, TimeSpan.FromSeconds(5))
+                .Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"storeCitySearch\"]")));
+
+            searchBox.Clear();
+            searchBox.SendKeys(searchText);
+
+        }
+
+        public void SearchStore_Detail(string searchText)
+        {
+            var searchBox = new WebDriverWait(_driver, TimeSpan.FromSeconds(5))
+                .Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"storeSetupSearch\"]")));
+
+            searchBox.Clear();
+            searchBox.SendKeys(searchText);
+
+        }
+
+        public void ClickNewGroupButton()
+        {
+            var newGroupButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewGroupButton));
+            newGroupButton.Click();
+        }
+        public void ClickNewCountryButton()
+        {
+            var newCountryButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewCountryButton));
+            newCountryButton.Click();
+        }
+
+        public void ClickNewStateButton()
+        {
+            var newStateButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewStateButton));
+            newStateButton.Click();
+        }
+
+        public void ClickNewCityButton()
+        {
+            var newCityButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewCityButton));
+            newCityButton.Click();
+        }
+
+        public void ClickNewStoreButton()
+        {
+            var newStoreButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewStoreButton));
+            newStoreButton.Click();
+        }
+
+
+        public void ClickNewTerminalButton()
+        {
+            var newTerminalButton = _wait.Until(ExpectedConditions.ElementToBeClickable(NewTerminalButton));
+            newTerminalButton.Click();
         }
 
         public void ClickEditButton(string Groupcode)
@@ -149,7 +303,119 @@ namespace SeleniumTests.Pages.Store
 
         }
 
+        public void ClickEditCountryButton(string Countrycode)
+        {
+            // Search by entering Countrycode
+            var searchInput = _wait.Until(ExpectedConditions.ElementIsVisible(
+                By.XPath("//*[@id=\"storeCountrySearch\"]")));
+            searchInput.Clear();
+            searchInput.SendKeys(Countrycode);
+            searchInput.SendKeys(Keys.Enter);
 
+            // Dynamic XPath to find a row containing Countrycode
+            string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(.), '{Countrycode}')]]";
+
+            var row = _wait.Until(driver =>
+            {
+                var rows = driver.FindElements(By.XPath(rowXpath));
+                return rows.FirstOrDefault(); // return the first match
+            });
+
+
+            // Find the edit icon inside column 4 of this row
+            var editIcon = row.FindElement(By.XPath(".//td[6]//img[contains(@class,'store-setup-edit11')]"));
+
+            // Wait for it to be clickable and then click
+            _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(editIcon)).Click();
+
+
+        }
+
+
+        public void ClickEditStateButton(string Statecode)
+        {
+            // Search by entering Statecode
+            var searchInput = _wait.Until(ExpectedConditions.ElementIsVisible(
+                By.XPath("//*[@id=\"storeStateSearch\"]")));
+            searchInput.Clear();
+            searchInput.SendKeys(Statecode);
+            searchInput.SendKeys(Keys.Enter);
+
+            // Dynamic XPath to find a row containing Statecode
+            string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(.), '{Statecode}')]]";
+
+            var row = _wait.Until(driver =>
+            {
+                var rows = driver.FindElements(By.XPath(rowXpath));
+                return rows.FirstOrDefault(); // return the first match
+            });
+
+
+            // Find the edit icon inside column 4 of this row
+            var editIcon = row.FindElement(By.XPath(".//td[5]//img[contains(@class,'store-setup-edit11')]"));
+
+            // Wait for it to be clickable and then click
+            _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(editIcon)).Click();
+
+
+        }
+
+
+        public void ClickEditCityButton(string Citycode)
+        {
+            // Search by entering Citycode
+            var searchInput = _wait.Until(ExpectedConditions.ElementIsVisible(
+                By.XPath("//*[@id=\"storeCitySearch\"]")));
+            searchInput.Clear();
+            searchInput.SendKeys(Citycode);
+            searchInput.SendKeys(Keys.Enter);
+
+            // Dynamic XPath to find a row containing Citycode
+            string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(.), '{Citycode}')]]";
+
+            var row = _wait.Until(driver =>
+            {
+                var rows = driver.FindElements(By.XPath(rowXpath));
+                return rows.FirstOrDefault(); // return the first match
+            });
+
+
+            // Find the edit icon inside column 4 of this row
+            var editIcon = row.FindElement(By.XPath(".//td[5]//img[contains(@class,'store-setup-edit11')]"));
+
+            // Wait for it to be clickable and then click
+            _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(editIcon)).Click();
+
+
+        }
+
+        public void ClickEditStoreButton(string Storecode)
+        {
+            // Search by entering Citycode
+            var searchInput = _wait.Until(ExpectedConditions.ElementIsVisible(
+                By.XPath("//*[@id=\"storeSetupSearch\"]")));
+            searchInput.Clear();
+            searchInput.SendKeys(Storecode);
+            searchInput.SendKeys(Keys.Enter);
+
+            // Dynamic XPath to find a row containing Citycode
+            string rowXpath = $"//table/tbody/tr[td[contains(normalize-space(.), '{Storecode}')]]";
+
+            var row = _wait.Until(driver =>
+            {
+                var rows = driver.FindElements(By.XPath(rowXpath));
+                return rows.FirstOrDefault(); // return the first match
+            });
+
+
+            // Find the edit icon inside column 4 of this row
+            var editIcon = row.FindElement(By.XPath(".//td[10]//img[contains(@class,'store-setup-edit11')]"));
+
+            // Wait for it to be clickable and then click
+            _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(editIcon)).Click();
+
+
+        }
 
 
         public void DeleteStoreCountryByCode(string code)
@@ -183,6 +449,16 @@ namespace SeleniumTests.Pages.Store
             ExportButton.Click();
         }
 
+        public void ClickExportLocationButton()
+        {
+            ExportLocationButton.Click();
+        }
+
+        public void ClickExportStoreButton()
+        {
+            ExportStoreButton.Click();
+        }
+
         // New Methods for Form Fields
         public void EnterGroupcode(string Groupcode)
         {
@@ -190,12 +466,145 @@ namespace SeleniumTests.Pages.Store
             GroupcodeInput.SendKeys(Groupcode);
         }
 
+        public void EnterCountrycode(string Countrycode)
+        {
+            CountrycodeInput.Clear();
+            CountrycodeInput.SendKeys(Countrycode);
+        }
+        public void EnterStatecode(string Statecode)
+        {
+            StatecodeInput.Clear();
+            StatecodeInput.SendKeys(Statecode);
+        }
+
+        public void EnterCitycode(string Citycode)
+        {
+            CitycodeInput.Clear();
+            CitycodeInput.SendKeys(Citycode);
+        }
+
+        public void EnterStorecode(string Storecode)
+        {
+            StorecodeInput.Clear();
+            StorecodeInput.SendKeys(Storecode);
+        }
         public void EnterGroupDesc(string GroupDesc)
         {
             GroupDescInput.Clear();
             GroupDescInput.SendKeys(GroupDesc);
         }
 
+        public void EnterCountryDesc(string CountryDesc)
+        {
+            CountryDescInput.Clear();
+            CountryDescInput.SendKeys(CountryDesc);
+        }
+
+        public void EnterStateDesc(string StateDesc)
+        {
+            StateDescInput.Clear();
+            StateDescInput.SendKeys(StateDesc);
+        }
+        public void EnterCityDesc(string CityDesc)
+        {
+            CityDescInput.Clear();
+            CityDescInput.SendKeys(CityDesc);
+        }
+
+        public void EnterStoreName(string StoreName)
+        {
+            StoreNameInput.Clear();
+            StoreNameInput.SendKeys(StoreName);
+        }
+
+        public void EnterStoreDesc(string StoreDesc)
+        {
+            StoreDescInput.Clear();
+            StoreDescInput.SendKeys(StoreDesc);
+        }
+        public void EnterStoreContactPerson(string Contactperson)
+        {
+            ContactPersonInput.Clear();
+            ContactPersonInput.SendKeys(Contactperson);
+        }
+
+        public void EnterStore1Address(string Address1)
+        {
+            Address1Input.Clear();
+            Address1Input.SendKeys(Address1);
+        }
+
+        public void EnterStore2Address(string Address2)
+        {
+            Address2Input.Clear();
+            Address2Input.SendKeys(Address2);
+        }
+
+        public void EnterStore3Address(string Address3)
+        {
+            Address3Input.Clear();
+            Address3Input.SendKeys(Address3);
+        }
+
+        public void EnterStore4Address(string Address4)
+        {
+            Address4Input.Clear();
+            Address4Input.SendKeys(Address4);
+        }
+
+        public void EnterStorePostCode(string PostCode)
+        {
+            PostCodeInput.Clear();
+            PostCodeInput.SendKeys(PostCode);
+        }
+
+        public void EnterStoreEmail(string StoreEmail)
+        {
+            StoreEmailInput.Clear();
+            StoreEmailInput.SendKeys(StoreEmail);
+        }
+
+        public void EnterStorePhoneNumber(string StoreEmail)
+        {
+            StorePhoneNumberInput.Clear();
+            StorePhoneNumberInput.SendKeys(StoreEmail);
+        }
+
+        public void EnterEatmolMerchantID(string EatmolID)
+        {
+            EatmolMerchantIDInput.Clear();
+            EatmolMerchantIDInput.SendKeys(EatmolID);
+        }
+
+        public void EnterFooterPhoneNumber(string FooterPhoneNumber)
+        {
+            FooterPhoneNumberInput.Clear();
+            FooterPhoneNumberInput.SendKeys(FooterPhoneNumber);
+        }
+
+        public void EnterFooterEmail(string FooterEmail)
+        {
+            FooterEmailInput.Clear();
+            FooterEmailInput.SendKeys(FooterEmail);
+        }
+
+        public void EnterFooterMessage(string FooterMessage)
+        {
+            FooterMessageInput.Clear();
+            FooterMessageInput.SendKeys(FooterMessage);
+        }
+
+        public void EnterTerminalID(string TerminalID)
+        {
+            TerminalIDInput.Clear();
+            TerminalIDInput.SendKeys(TerminalID);
+        }
+
+        public void EnterTerminalDesc(string TerminalDesc)
+        {
+            TerminalDescInput.Clear();
+            TerminalDescInput.SendKeys(TerminalDesc);
+        }
 
         public void SetCheckboxState(bool isChecked)
         {
@@ -209,18 +618,83 @@ namespace SeleniumTests.Pages.Store
             }
         }
 
+        public void SetCheckboxStoreState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"activeStoreSetup\"]")
+            ));
 
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
+
+        public void SetCountryCheckboxState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"storeActiveStoreCountry\"]")
+            ));
+
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
+
+        public void SetEReceiptCheckboxState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"enableEReceipt\"]")
+            ));
+
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
+
+        public void SetEReceiptEmailCheckboxState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"sendViaEmail\"]")
+            ));
+
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
+
+        public void SetEReceiptGenerateEmailCheckboxState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"generatePDF\"]")
+            ));
+
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
+
+
+        public void SetTerminalStatusCheckboxState(bool isChecked)
+        {
+            var checkbox = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(
+                By.XPath("//*[@id=\"terminalActiveCheck\"]")
+            ));
+
+            if (checkbox.Selected != isChecked)
+            {
+                checkbox.Click();
+            }
+        }
 
         public void EnterBEsst(string BEsst)
         {
             BEsstInput.Clear();
             BEsstInput.SendKeys(BEsst);
-        }
-
-        public void EnterstrPostCode(string strPostCode)
-        {
-            StorePostCodeInput.Clear();
-            StorePostCodeInput.SendKeys(strPostCode);
         }
 
         public void EnterStoreAddress1(string StoreAddress1)

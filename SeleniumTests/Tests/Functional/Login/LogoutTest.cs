@@ -322,6 +322,12 @@ namespace SeleniumTests.Tests.Functional.Login
             try
             {
                 string testerName = AppConfig.TesterName;
+                string developerName = AppConfig.FEDeveloperName + "\n" + AppConfig.BEDeveloperName;
+                string managerName = AppConfig.ManagerName;
+                string clientName = AppConfig.ClientName;
+                string changeDesc = AppConfig.ChangeDesc;
+
+
 
                 if (!File.Exists(_exportFilePath))
                 {
@@ -336,7 +342,11 @@ namespace SeleniumTests.Tests.Functional.Login
                 {
                     var worksheet = package.Workbook.Worksheets[0];
                     // ✅ Write tester name and date
+                    worksheet.Cells["D5"].Value = changeDesc;
                     worksheet.Cells["F2"].Value = testerName;
+                    worksheet.Cells["F4"].Value = developerName;
+                    worksheet.Cells["F6"].Value = managerName;
+                    worksheet.Cells["F8"].Value = clientName;
                     worksheet.Cells["C13"].Value = testerName;
                     worksheet.Cells["D2"].Value = _moduleName;
                     worksheet.Cells["B13"].Value = DateTime.Now.ToString("yyyy-MM-dd");
@@ -508,7 +518,6 @@ namespace SeleniumTests.Tests.Functional.Login
                 Console.WriteLine("❌ Failed to export to Excel: " + ex.Message);
             }
         }
-
 
 
         private void LogStep(string message)

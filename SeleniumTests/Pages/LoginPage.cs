@@ -94,8 +94,8 @@ namespace CloudbiteBackend.SeleniumTests.Pages
         [FindsBy(How = How.CssSelector, Using = ".btn.primaryActionBtn.mr-5.imgBtn")]
         private IWebElement SelectServerOKButton;
 
-        [FindsBy(How = How.CssSelector, Using = ".btn.secondaryActionBtn.mr-5.btn-cancel-hover.imgBtn")]
-        private IWebElement SelectServerCancelButton;
+        //[FindsBy(How = How.CssSelector, Using = ".btn.secondaryActionBtn.mr-5.btn-cancel-hover.imgBtn")]
+        //private IWebElement SelectServerCancelButton;
 
         public void ClickSelectServerButton()
         {

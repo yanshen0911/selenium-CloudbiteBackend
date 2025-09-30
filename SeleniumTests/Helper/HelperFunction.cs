@@ -32,21 +32,32 @@ namespace SeleniumTests.Helper
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".mat-mdc-table")));
         }
 
-        public static void WaitForBETableToLoad(WebDriverWait wait)
-        {
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-business-entity/div/div[4]/div/div[1]/div/table/tbody/tr")));
-
-        }
-
         public static void WaitForSTRGroupTableToLoad(WebDriverWait wait)
         {
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-group/div[2]/p-table/div/div/table/tbody/tr")));
 
         }
 
-        public static void WaitForCustTableToLoad(WebDriverWait wait)
+        public static void WaitForCountryTableToLoad(WebDriverWait wait)
         {
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-layout/div/div/div/div/app-content/app-customer/div/div[4]/div/div[1]/div/table/tbody/tr")));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-zone/div[2]/mat-tab-group/div/mat-tab-body[1]/div/div/p-table/div/div/table/tbody/tr")));
+
+        }
+        public static void WaitForStateTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-zone/div[2]/mat-tab-group/div/mat-tab-body[2]/div/div/p-table/div/div/table/tbody/tr")));
+
+        }
+
+        public static void WaitForCityTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-zone/div[2]/mat-tab-group/div/mat-tab-body[3]/div/div/p-table/div/div/table/tbody/tr")));
+
+        }
+
+        public static void WaitForStoreTableToLoad(WebDriverWait wait)
+        {
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/app-root/body/app-management/div/mat-sidenav-container/mat-sidenav-content/div[2]/app-store/div/div/app-store-setup/div[2]/p-table/div/div/table/tbody/tr")));
 
         }
 
